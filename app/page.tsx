@@ -1,6 +1,5 @@
 import FogOverlay from '@/components/FogOverlay';
-import { Sparkles, Github, Linkedin, Mail, ExternalLink, Code2 } from 'lucide-react';
-
+import { Sparkles, FolderGit2, Globe, Mail, ExternalLink, Code2 } from 'lucide-react';
 interface Project {
   title: string;
   description: string;
@@ -96,15 +95,14 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="pt-12 border-t border-[#3b7a75]/20 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-[#8ba2b5]">
-          <p>© {new Date().getFullYear()} — Designed in the Pacific Northwest aesthetic.</p>
-          <div className="flex gap-5">
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8]"><Github size={18} /></a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8]"><Linkedin size={18} /></a>
-            <a href="mailto:contact@example.com" className="hover:text-[#e2f1f8]"><Mail size={18} /></a>
-          </div>
-        </footer>
+       <footer className="pt-12 border-t border-[#3b7a75]/20 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-[#8ba2b5]">
+        <p>© {new Date().getFullYear()} — Designed in the Pacific Northwest aesthetic.</p>
+        <div className="flex gap-5">
+          <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8]"><FolderGit2 size={18} /></a>
+          <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8]"><Globe size={18} /></a>
+          <a href="mailto:contact@example.com" className="hover:text-[#e2f1f8]"><Mail size={18} /></a>
+        </div>
+      </footer>
 
       </main>
     </div>
