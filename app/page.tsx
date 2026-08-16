@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import FogOverlay from '@/components/FogOverlay';
 import Image from 'next/image';
+import FogOverlay from '@/components/FogOverlay';
 import { 
   Sparkles, 
   FolderGit2, 
@@ -17,8 +17,11 @@ import {
   VolumeX, 
   Terminal, 
   Cpu, 
-  Compass,
-  GraduationCap
+  GraduationCap,
+  Layers,
+  Database,
+  Brain,
+  Moon
 } from 'lucide-react';
 
 interface Project {
@@ -40,7 +43,7 @@ export default function Home() {
 
   const toggleAudio = () => {
     if (!audioRef.current) {
-      audioRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2516/2516-preview.mp3'); // Soft forest rain ambience
+      audioRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2516/2516-preview.mp3');
       audioRef.current.loop = true;
       audioRef.current.volume = 0.3;
     }
@@ -54,6 +57,16 @@ export default function Home() {
     }
   };
 
+  const skills = [
+    { name: 'Git', icon: FolderGit2, color: 'text-orange-400' },
+    { name: 'PHP / Laravel', icon: Code2, color: 'text-indigo-400' },
+    { name: 'Python / Flask', icon: Terminal, color: 'text-[#8bbcd4]' },
+    { name: 'MediaPipe', icon: Brain, color: 'text-[#70a9a1]' },
+    { name: 'Streamlit', icon: Layers, color: 'text-rose-400' },
+    { name: 'Unity 2D/3D', icon: Cpu, color: 'text-cyan-400' },
+    { name: 'SQL Server / MySQL', icon: Database, color: 'text-amber-400' },
+  ];
+
   const projects: Project[] = [
     {
       id: 'my-hygiene',
@@ -63,7 +76,7 @@ export default function Home() {
       summary: 'Transforms children hygiene learning using MediaPipe computer vision gesture tracking[cite: 1].',
       highlights: [
         'Built with Unity 2D & C# for primary school health education[cite: 1].',
-        'Real-time physical gesture detection (hand washing & teeth brushing smiles) using MediaPipe[cite: 1].',
+        'Real-time physical gesture detection (hand washing & smiling) using MediaPipe[cite: 1].',
         'Awarded Best Booth at FYPro-Com Exhibition (SEM 1 2025/2026)[cite: 1].'
       ],
       techStack: ['Unity 2D', 'C#', 'MediaPipe', 'Computer Vision'],
@@ -145,121 +158,177 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen starry-bg selection:bg-[#3b7a75] selection:text-[#e2f1f8]">
-      {/* Dynamic Animated Fog */}
       <FogOverlay />
 
-      {/* Ambient Audio Floating Toggle */}
+      {/* Floating Ambient Sound Button */}
       <button
         onClick={toggleAudio}
         className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full twilight-card text-[#70a9a1] hover:text-[#e2f1f8] hover:border-[#70a9a1] transition-all flex items-center gap-2 text-xs shadow-2xl"
-        title="Toggle Pacific Northwest Forest Ambience"
       >
         {isPlayingAudio ? <Volume2 size={18} className="animate-pulse" /> : <VolumeX size={18} />}
-        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Mist Ambience: ON' : 'Atmosphere'}</span>
+        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Sound: ON' : 'Atmosphere'}</span>
       </button>
 
-      {/* Top Navigation */}
-      <nav className="relative z-20 max-w-5xl mx-auto px-6 py-8 flex items-center justify-between border-b border-[#3b7a75]/20">
-        <div className="flex items-center gap-2">
-          <Compass size={20} className="text-[#70a9a1]" />
-          <span className="font-cinzel text-sm tracking-widest text-[#e2f1f8] uppercase">Forks, WA • 47.9504° N</span>
-        </div>
-        <div className="flex gap-4 text-xs text-[#8ba2b5]">
-          <a href="#about" className="hover:text-[#e2f1f8] transition-colors">About</a>
-          <a href="#projects" className="hover:text-[#e2f1f8] transition-colors">Projects</a>
-          <a href="#experience" className="hover:text-[#e2f1f8] transition-colors">Experience</a>
-        </div>
-      </nav>
+      {/* Sticky Top Navbar like your screenshot */}
+      <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#04070c]/70 border-b border-[#3b7a75]/20">
+        <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Moon className="text-[#70a9a1] fill-[#70a9a1]" size={22} />
+            <span className="font-cinzel text-xl font-bold tracking-widest text-[#e2f1f8]">
+              MAI<span className="text-[#70a9a1] font-mono text-sm">.dev</span>
+            </span>
+          </div>
 
-      <main className="relative z-10 max-w-5xl mx-auto px-6 pt-16 pb-32 flex flex-col gap-28">
+          <nav className="hidden md:flex items-center gap-8 text-sm text-[#8ba2b5]">
+            <a href="#home" className="hover:text-[#e2f1f8] transition-colors">Home</a>
+            <a href="#skills" className="hover:text-[#e2f1f8] transition-colors">Skills</a>
+            <a href="#timeline" className="hover:text-[#e2f1f8] transition-colors">Education</a>
+            <a href="#projects" className="hover:text-[#e2f1f8] transition-colors">Projects</a>
+            <a href="#experience" className="hover:text-[#e2f1f8] transition-colors">Experience</a>
+          </nav>
+
+          <a
+            href="https://spotify.com"
+            target="_blank"
+            rel="noreferrer"
+            className="px-4 py-1.5 rounded-full bg-[#10202e] border border-[#3b7a75]/40 text-xs text-[#8bbcd4] flex items-center gap-2 hover:border-[#70a9a1] transition-all"
+          >
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            Spotify
+          </a>
+        </div>
+      </header>
+
+      {/* Main Full-Width Container */}
+      <main className="relative z-10 max-w-7xl mx-auto px-6 py-16 flex flex-col gap-32">
         
-       {/* --- HERO SECTION WITH ANIMATED PROFILE PHOTO --- */}
-<section id="about" className="flex flex-col items-center text-center">
-  
-  {/* Profile Image Container with Glowing Aura */}
-  <div className="profile-aura-frame mb-8 floating-card">
-    <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden border-2 border-[#04070c]">
-      <Image
-        src="/profile.jpg"
-        alt="Siti Nur Maisarah"
-        fill
-        sizes="(max-width: 640px) 144px, 176px"
-        className="object-cover hover:scale-105 transition-transform duration-500 grayscale hover:grayscale-0"
-        priority
-      />
-    </div>
-  </div>
-
-  <p className="font-cinzel text-xs text-[#70a9a1] tracking-[0.3em] uppercase mb-3 animate-pulse">
-    &ldquo;About three things I was absolutely positive...&rdquo;
-  </p>
-
-  <h1 className="font-cinzel text-4xl sm:text-7xl tracking-widest uppercase drop-shadow-[0_0_35px_rgba(112,169,161,0.4)] mb-4 shimmer-text">
-    Siti Nur Maisarah
-  </h1>
-
-  <p className="text-base sm:text-xl text-[#8bbcd4] max-w-2xl font-light leading-relaxed">
-    Full-Stack Developer • Game Engineer • AI/ML Integrator
-  </p>
-
-  <p className="mt-4 text-xs sm:text-sm text-[#8ba2b5] max-w-xl leading-relaxed font-light">
-    Computer Science Graduate from Universiti Malaysia Pahang Al-Sultan Abdullah (CGPA 3.52)[cite: 1]. Crafting production web apps, computer vision games, and cloud solutions under evergreen misty skies[cite: 1].
-  </p>
-
-  {/* Action Buttons */}
-  <div className="mt-8 flex flex-wrap justify-center gap-4">
-    <a
-      href="#projects"
-      className="px-8 py-3.5 rounded-xl bg-[#10202e] text-[#e2f1f8] border border-[#3b7a75]/50 flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium hover:border-[#8bbcd4] hover:shadow-[0_0_20px_rgba(112,169,161,0.4)] transition-all"
-    >
-      <Terminal size={16} className="text-[#70a9a1]" />
-      View Works
-    </a>
-    <a
-      href="mailto:maisarahmzn@gmail.com"
-      className="px-8 py-3.5 rounded-xl twilight-card text-[#8ba2b5] hover:text-[#e2f1f8] flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium transition-all"
-    >
-      <Mail size={16} />
-      Initiate Contact
-    </a>
-  </div>
-</section>
-
-        {/* --- EXPERIENCE BANNER --- */}
-        <section id="experience" className="twilight-card rounded-2xl p-8 border border-[#3b7a75]/30">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3.5 rounded-xl bg-[#04070c] text-[#70a9a1] border border-[#3b7a75]/30">
-                <Briefcase size={24} />
-              </div>
-              <div>
-                <span className="text-[10px] font-mono text-[#70a9a1] uppercase tracking-wider">Enterprise IT Internship</span>
-                <h3 className="font-cinzel text-lg text-[#e2f1f8]">Information System Intern</h3>
-                <p className="text-xs text-[#8ba2b5]">ROHM Electronics (Malaysia) Sdn. Bhd.[cite: 1]</p>
-              </div>
+        {/* --- SECTION 1: HERO HOME --- */}
+        <section id="home" className="flex flex-col items-center text-center pt-8">
+          <div className="profile-aura-frame mb-8 floating-card">
+            <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full overflow-hidden border-2 border-[#04070c]">
+              <Image
+                src="/profile.jpg"
+                alt="Siti Nur Maisarah"
+                fill
+                sizes="(max-width: 640px) 160px, 192px"
+                className="object-cover hover:scale-105 transition-transform duration-500"
+                priority
+              />
             </div>
+          </div>
 
-            <ul className="text-xs text-[#8ba2b5] space-y-1.5 font-light">
-              <li>• Built production PHP & SQL Server internal applications[cite: 1].</li>
-              <li>• Provisioned Active Directory domain devices and network infrastructure[cite: 1].</li>
-              <li>• Configured REST APIs and validated JSON payloads via Postman[cite: 1].</li>
-            </ul>
+          <p className="font-cinzel text-xs text-[#70a9a1] tracking-[0.3em] uppercase mb-3 animate-pulse">
+            &ldquo;About three things I was absolutely positive...&rdquo;
+          </p>
+
+          <h1 className="font-cinzel text-5xl sm:text-7xl tracking-widest uppercase drop-shadow-[0_0_35px_rgba(112,169,161,0.4)] mb-4 shimmer-text">
+            Siti Nur Maisarah
+          </h1>
+
+          <p className="text-lg sm:text-2xl text-[#8bbcd4] max-w-3xl font-light leading-relaxed">
+            Full-Stack Developer • Game Engineer • AI/ML Integrator
+          </p>
+
+          <p className="mt-4 text-sm text-[#8ba2b5] max-w-2xl leading-relaxed font-light">
+            Computer Science Graduate from Universiti Malaysia Pahang Al-Sultan Abdullah (CGPA 3.52)[cite: 1]. Crafting production web applications, computer vision interactive games, and cloud solutions[cite: 1].
+          </p>
+
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <a
+              href="#projects"
+              className="px-8 py-3.5 rounded-xl bg-[#10202e] text-[#e2f1f8] border border-[#3b7a75]/50 flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium hover:border-[#8bbcd4] hover:shadow-[0_0_20px_rgba(112,169,161,0.4)] transition-all"
+            >
+              <Terminal size={16} className="text-[#70a9a1]" />
+              Explore Projects
+            </a>
+            <a
+              href="mailto:maisarahmzn@gmail.com"
+              className="px-8 py-3.5 rounded-xl twilight-card text-[#8ba2b5] hover:text-[#e2f1f8] flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium transition-all"
+            >
+              <Mail size={16} />
+              Get In Touch
+            </a>
           </div>
         </section>
 
-        {/* --- PROJECTS EXTRAVAGANZA SHOWCASE --- */}
+        {/* --- SECTION 2: TECH STACK & SKILLS (HORIZONTAL ROW LIKE SCREENSHOT) --- */}
+        <section id="skills" className="flex flex-col items-center gap-8">
+          <h2 className="font-cinzel text-3xl sm:text-4xl text-[#e2f1f8] tracking-wider text-center">
+            Tech Stack & Skills
+          </h2>
+
+          <div className="w-full flex flex-wrap justify-center gap-4">
+            {skills.map((skill, idx) => {
+              const Icon = skill.icon;
+              return (
+                <div 
+                  key={idx}
+                  className="twilight-card vampire-sparkle px-6 py-4 rounded-2xl flex items-center gap-3 border border-[#3b7a75]/30 hover:border-[#70a9a1] transition-all cursor-pointer min-w-[160px]"
+                >
+                  <Icon className={skill.color} size={22} />
+                  <span className="text-sm font-medium text-[#e2f1f8] font-sans">{skill.name}</span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* --- SECTION 3: EDUCATION TIMELINE (BAR GRAPH LIKE SCREENSHOT) --- */}
+        <section id="timeline" className="twilight-card rounded-3xl p-8 sm:p-12 border border-[#3b7a75]/30">
+          <h2 className="font-cinzel text-3xl text-[#e2f1f8] tracking-wider text-center mb-10">
+            Education Timeline
+          </h2>
+
+          <div className="space-y-8 max-w-4xl mx-auto">
+            {/* Timeline Year Axis */}
+            <div className="grid grid-cols-6 text-center text-xs font-mono text-[#70a9a1] border-b border-[#3b7a75]/20 pb-2">
+              <span>2021</span>
+              <span>2022</span>
+              <span>2023</span>
+              <span>2024</span>
+              <span>2025</span>
+              <span>2026</span>
+            </div>
+
+            {/* Diploma Bar */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-semibold text-[#e2f1f8]">Diploma in Computer Science</h3>
+                <p className="text-xs text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.51[cite: 1]</p>
+              </div>
+              <div className="w-full md:w-2/3 bg-[#04070c] rounded-full h-8 p-1 border border-[#3b7a75]/20 relative">
+                <div className="w-2/5 h-full rounded-full bg-gradient-to-r from-sky-400 to-cyan-400 flex items-center justify-center text-[11px] font-mono font-bold text-slate-950">
+                  2021 - 2023[cite: 1]
+                </div>
+              </div>
+            </div>
+
+            {/* Bachelor Bar */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-semibold text-[#e2f1f8]">Bachelor of Computer Science (Graphics & Multimedia)</h3>
+                <p className="text-xs text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.52[cite: 1]</p>
+              </div>
+              <div className="w-full md:w-2/3 bg-[#04070c] rounded-full h-8 p-1 border border-[#3b7a75]/20 relative flex justify-end">
+                <div className="w-3/5 h-full rounded-full bg-gradient-to-r from-pink-500 to-rose-400 flex items-center justify-center text-[11px] font-mono font-bold text-slate-950">
+                  2023 - Present[cite: 1]
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* --- SECTION 4: PROJECT ARCHIVES --- */}
         <section id="projects" className="flex flex-col gap-10">
-          
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-[#3b7a75]/20 pb-6">
             <div>
               <div className="flex items-center gap-2 text-[#70a9a1] mb-2">
                 <Sparkles size={16} />
                 <span className="text-xs uppercase tracking-widest font-mono">Curated Portfolio</span>
               </div>
-              <h2 className="font-cinzel text-3xl text-[#e2f1f8] tracking-wider">Project Archives</h2>
+              <h2 className="font-cinzel text-3xl text-[#e2f1f8] tracking-wider">Featured Projects</h2>
             </div>
 
-            {/* Category Filter Tabs */}
             <div className="flex flex-wrap gap-2">
               {(['all', 'web', 'game', 'ai'] as const).map((tab) => (
                 <button
@@ -277,7 +346,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Cards Grid with Vampire Sparkle Hover Effect */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((project) => (
               <div 
@@ -312,35 +380,31 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- ACADEMICS & CERTIFICATIONS --- */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          
-          <div className="twilight-card rounded-2xl p-6 flex flex-col justify-between">
+        {/* --- SECTION 5: WORK EXPERIENCE & CERTIFICATIONS --- */}
+        <section id="experience" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="twilight-card rounded-2xl p-8 border border-[#3b7a75]/30 flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-4 text-[#70a9a1]">
-                <GraduationCap size={20} />
-                <h3 className="font-cinzel text-sm text-[#e2f1f8]">Education</h3>
+              <div className="flex items-center gap-3 mb-4 text-[#70a9a1]">
+                <Briefcase size={22} />
+                <h3 className="font-cinzel text-base text-[#e2f1f8]">Professional Experience</h3>
               </div>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-xs text-[#e2f1f8] font-medium">Bachelor of Computer Science (Graphics & Multimedia)</h4>
-                  <p className="text-[11px] text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.52[cite: 1]</p>
-                </div>
-                <div>
-                  <h4 className="text-xs text-[#e2f1f8] font-medium">Diploma in Computer Science</h4>
-                  <p className="text-[11px] text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.51[cite: 1]</p>
-                </div>
-              </div>
+              <h4 className="text-sm font-semibold text-[#e2f1f8]">Information System Intern</h4>
+              <p className="text-xs text-[#8ba2b5] mb-4">ROHM Electronics (Malaysia) Sdn. Bhd.[cite: 1]</p>
+              <ul className="text-xs text-[#8ba2b5] space-y-2 font-light">
+                <li>• Developed internal applications using PHP and Microsoft SQL Server[cite: 1].</li>
+                <li>• Maintained Active Directory domain workstations and domain rules[cite: 1].</li>
+                <li>• Built REST APIs and executed payload validation with Postman[cite: 1].</li>
+              </ul>
             </div>
           </div>
 
-          <div className="twilight-card rounded-2xl p-6 flex flex-col justify-between">
+          <div className="twilight-card rounded-2xl p-8 border border-[#3b7a75]/30 flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-4 text-[#70a9a1]">
-                <Award size={20} />
-                <h3 className="font-cinzel text-sm text-[#e2f1f8]">Certifications</h3>
+              <div className="flex items-center gap-3 mb-4 text-[#70a9a1]">
+                <Award size={22} />
+                <h3 className="font-cinzel text-base text-[#e2f1f8]">Certifications</h3>
               </div>
-              <ul className="text-xs text-[#8ba2b5] space-y-2.5 font-light">
+              <ul className="text-xs text-[#8ba2b5] space-y-3 font-light">
                 <li className="flex justify-between border-b border-[#3b7a75]/20 pb-2">
                   <span>AWS Cloud Practitioner Essentials[cite: 1]</span>
                   <span className="font-mono text-[#70a9a1]">2025[cite: 1]</span>
@@ -356,15 +420,14 @@ export default function Home() {
               </ul>
             </div>
           </div>
-
         </section>
 
-        {/* --- FOOTER & PINE FOREST SILHOUETTE --- */}
+        {/* --- FOOTER --- */}
         <footer className="pt-16 border-t border-[#3b7a75]/20 flex flex-col items-center justify-center text-center gap-6 text-xs text-[#8ba2b5]">
           <p className="font-cinzel tracking-widest text-[#e2f1f8]">
             &ldquo;And so the lion fell in love with the lamb...&rdquo;
           </p>
-          <p>© {new Date().getFullYear()} Siti Nur Maisarah • Designed for the Pacific Northwest aesthetic[cite: 1].</p>
+          <p>© {new Date().getFullYear()} Siti Nur Maisarah • Pacific Northwest Aesthetic[cite: 1].</p>
           
           <div className="flex gap-6">
             <a href="https://github.com/maisiyy" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8] transition-colors"><FolderGit2 size={20} /></a>
@@ -375,7 +438,7 @@ export default function Home() {
 
       </main>
 
-      {/* --- MODAL POPUP --- */}
+      {/* --- POPUP MODAL --- */}
       {selectedProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#04070c]/85 backdrop-blur-lg">
           <div className="twilight-card max-w-lg w-full rounded-2xl p-8 relative border border-[#70a9a1]/50 shadow-2xl">
