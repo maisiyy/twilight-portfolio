@@ -57,16 +57,60 @@ export default function Home() {
     }
   };
 
-  const skills = [
-    { name: 'Git', icon: FolderGit2, color: 'text-orange-400' },
-    { name: 'PHP / Laravel', icon: Code2, color: 'text-indigo-400' },
-    { name: 'Python / Flask', icon: Terminal, color: 'text-[#8bbcd4]' },
-    { name: 'MediaPipe', icon: Brain, color: 'text-[#70a9a1]' },
-    { name: 'Streamlit', icon: Layers, color: 'text-rose-400' },
-    { name: 'Unity 2D/3D', icon: Cpu, color: 'text-cyan-400' },
-    { name: 'SQL Server / MySQL', icon: Database, color: 'text-amber-400' },
-  ];
-
+  /* --- CATEGORIZED SKILLS DATA STRUCTURE --- */
+const skillCategories = [
+  {
+    title: "Web & Programming ()",
+    items: [
+      { name: "Python", icon: Terminal, color: "text-[#8bbcd4]" },
+      { name: "C#", icon: Code2, color: "text-[#70a9a1]" },
+      { name: "PHP", icon: Code2, color: "text-[#8bbcd4]" },
+      { name: "JavaScript", icon: Code2, color: "text-[#70a9a1]" },
+      { name: "HTML / CSS", icon: Globe, color: "text-[#8bbcd4]" },
+    ]
+  },
+  {
+    title: "Frontend & Game ()",
+    items: [
+      { name: "Unity 2D/3D", icon: Cpu, color: "text-[#70a9a1]" },
+      { name: "Tailwind CSS", icon: Layers, color: "text-[#8bbcd4]" },
+      { name: "Next.js", icon: Globe, color: "text-[#70a9a1]" },
+      { name: "Figma", icon: Sparkles, color: "text-[#8bbcd4]" },
+    ]
+  },
+  {
+    title: "Backend & APIs ()",
+    items: [
+      { name: "REST API", icon: Terminal, color: "text-[#70a9a1]" },
+      { name: "Flask", icon: Terminal, color: "text-[#8bbcd4]" },
+      { name: "Aura SQL", icon: Database, color: "text-[#70a9a1]" },
+      { name: "MediaPipe", icon: Brain, color: "text-[#8bbcd4]" },
+    ]
+  },
+  {
+    title: "Databases & Storage ()",
+    items: [
+      { name: "MySQL", icon: Database, color: "text-[#70a9a1]" },
+      { name: "SQL Server", icon: Database, color: "text-[#8bbcd4]" },
+    ]
+  },
+  {
+    title: "Cloud & DevOps ()",
+    items: [
+      { name: "AWS Beanstalk", icon: Globe, color: "text-[#70a9a1]" },
+      { name: "Streamlit Cloud", icon: Layers, color: "text-[#8bbcd4]" },
+      { name: "Git / GitHub", icon: FolderGit2, color: "text-[#70a9a1]" },
+      { name: "GitHub Actions", icon: Cpu, color: "text-[#8bbcd4]" },
+    ]
+  },
+  {
+    title: "System Admin ()",
+    items: [
+      { name: "MikroTik Winbox", icon: Terminal, color: "text-[#70a9a1]" },
+      { name: "Active Directory", icon: Cpu, color: "text-[#8bbcd4]" },
+    ]
+  }
+];
   const projects: Project[] = [
     {
       id: 'my-hygiene',
@@ -251,27 +295,50 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- SECTION 2: TECH STACK & SKILLS (HORIZONTAL ROW LIKE SCREENSHOT) --- */}
-        <section id="skills" className="flex flex-col items-center gap-8">
-          <h2 className="font-cinzel text-3xl sm:text-4xl text-[#e2f1f8] tracking-wider text-center">
-            Tech Stack & Skills
-          </h2>
+      {/* --- SECTION 2: CATEGORIZED TECH STACK --- */}
+<section id="skills" className="w-full flex flex-col items-center gap-12">
+  
+  {/* Section Header */}
+  <div className="flex items-center gap-4 w-full justify-center">
+    <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#3b7a75]/40" />
+    <h2 className="font-cinzel text-3xl sm:text-4xl text-[#e2f1f8] tracking-wider text-center">
+      &lt; <span className="shimmer-text">Tech Stack</span> /&gt;
+    </h2>
+    <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#3b7a75]/40" />
+  </div>
 
-          <div className="w-full flex flex-wrap justify-center gap-4">
-            {skills.map((skill, idx) => {
-              const Icon = skill.icon;
-              return (
-                <div 
-                  key={idx}
-                  className="twilight-card vampire-sparkle px-6 py-4 rounded-2xl flex items-center gap-3 border border-[#3b7a75]/30 hover:border-[#70a9a1] transition-all cursor-pointer min-w-[160px]"
-                >
-                  <Icon className={skill.color} size={22} />
-                  <span className="text-sm font-medium text-[#e2f1f8] font-sans">{skill.name}</span>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+  {/* 2-Column Grid Categories Container */}
+  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-10">
+    {skillCategories.map((category, catIdx) => (
+      <div key={catIdx} className="flex flex-col gap-4">
+        
+        {/* Category Subheading */}
+        <h3 className="font-cinzel text-lg text-[#e2f1f8] text-center md:text-left flex items-center justify-center md:justify-start gap-2">
+          <span>{category.title.split(' ')[0]}</span>
+          <span className="text-[#70a9a1] text-sm font-mono">{category.title.split(' ')[1]} {category.title.split(' ')[2]}</span>
+        </h3>
+
+        {/* Skill Card Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {category.items.map((item, itemIdx) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={itemIdx}
+                className="twilight-card vampire-sparkle p-4 rounded-xl flex flex-col items-center justify-center gap-2 border border-[#3b7a75]/30 hover:border-[#70a9a1] transition-all group cursor-pointer"
+              >
+                <Icon className={`${item.color} group-hover:scale-110 transition-transform duration-300`} size={24} />
+                <span className="text-xs font-medium text-[#e2f1f8] font-sans text-center">{item.name}</span>
+              </div>
+            );
+          })}
+        </div>
+
+      </div>
+    ))}
+  </div>
+
+</section>
 
         {/* --- SECTION 3: EDUCATION TIMELINE (BAR GRAPH LIKE SCREENSHOT) --- */}
         <section id="timeline" className="twilight-card rounded-3xl p-8 sm:p-12 border border-[#3b7a75]/30">
