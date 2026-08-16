@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import FogOverlay from '@/components/FogOverlay';
 import { 
   Sparkles, 
   FolderGit2, 
@@ -21,7 +20,9 @@ import {
   Layers,
   Database,
   Brain,
-  Moon
+  Moon,
+  Trees,
+  Film
 } from 'lucide-react';
 
 interface Project {
@@ -39,7 +40,12 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'all' | 'web' | 'game' | 'ai'>('all');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [theme, setTheme] = useState<'twilight' | 'new-moon' | 'eclipse' | 'breaking-dawn'>('twilight');
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const toggleAudio = () => {
     if (!audioRef.current) {
@@ -57,60 +63,60 @@ export default function Home() {
     }
   };
 
-  /* --- CATEGORIZED SKILLS DATA STRUCTURE --- */
-const skillCategories = [
-  {
-    title: "Web & Programming ()",
-    items: [
-      { name: "Python", icon: Terminal, color: "text-[#8bbcd4]" },
-      { name: "C#", icon: Code2, color: "text-[#70a9a1]" },
-      { name: "PHP", icon: Code2, color: "text-[#8bbcd4]" },
-      { name: "JavaScript", icon: Code2, color: "text-[#70a9a1]" },
-      { name: "HTML / CSS", icon: Globe, color: "text-[#8bbcd4]" },
-    ]
-  },
-  {
-    title: "Frontend & Game ()",
-    items: [
-      { name: "Unity 2D/3D", icon: Cpu, color: "text-[#70a9a1]" },
-      { name: "Tailwind CSS", icon: Layers, color: "text-[#8bbcd4]" },
-      { name: "Next.js", icon: Globe, color: "text-[#70a9a1]" },
-      { name: "Figma", icon: Sparkles, color: "text-[#8bbcd4]" },
-    ]
-  },
-  {
-    title: "Backend & APIs ()",
-    items: [
-      { name: "REST API", icon: Terminal, color: "text-[#70a9a1]" },
-      { name: "Flask", icon: Terminal, color: "text-[#8bbcd4]" },
-      { name: "Aura SQL", icon: Database, color: "text-[#70a9a1]" },
-      { name: "MediaPipe", icon: Brain, color: "text-[#8bbcd4]" },
-    ]
-  },
-  {
-    title: "Databases & Storage ()",
-    items: [
-      { name: "MySQL", icon: Database, color: "text-[#70a9a1]" },
-      { name: "SQL Server", icon: Database, color: "text-[#8bbcd4]" },
-    ]
-  },
-  {
-    title: "Cloud & DevOps ()",
-    items: [
-      { name: "AWS Beanstalk", icon: Globe, color: "text-[#70a9a1]" },
-      { name: "Streamlit Cloud", icon: Layers, color: "text-[#8bbcd4]" },
-      { name: "Git / GitHub", icon: FolderGit2, color: "text-[#70a9a1]" },
-      { name: "GitHub Actions", icon: Cpu, color: "text-[#8bbcd4]" },
-    ]
-  },
-  {
-    title: "System Admin ()",
-    items: [
-      { name: "MikroTik Winbox", icon: Terminal, color: "text-[#70a9a1]" },
-      { name: "Active Directory", icon: Cpu, color: "text-[#8bbcd4]" },
-    ]
-  }
-];
+  const skillCategories = [
+    {
+      title: "Web & Programming ()",
+      items: [
+        { name: "Python", icon: Terminal, color: "text-[#8bbcd4]" },
+        { name: "C#", icon: Code2, color: "text-[#70a9a1]" },
+        { name: "PHP", icon: Code2, color: "text-[#8bbcd4]" },
+        { name: "JavaScript", icon: Code2, color: "text-[#70a9a1]" },
+        { name: "HTML / CSS", icon: Globe, color: "text-[#8bbcd4]" },
+      ]
+    },
+    {
+      title: "Frontend & Game ()",
+      items: [
+        { name: "Unity 2D/3D", icon: Cpu, color: "text-[#70a9a1]" },
+        { name: "Tailwind CSS", icon: Layers, color: "text-[#8bbcd4]" },
+        { name: "Next.js", icon: Globe, color: "text-[#70a9a1]" },
+        { name: "Figma", icon: Sparkles, color: "text-[#8bbcd4]" },
+      ]
+    },
+    {
+      title: "Backend & APIs ()",
+      items: [
+        { name: "REST API", icon: Terminal, color: "text-[#70a9a1]" },
+        { name: "Flask", icon: Terminal, color: "text-[#8bbcd4]" },
+        { name: "Aura SQL", icon: Database, color: "text-[#70a9a1]" },
+        { name: "MediaPipe", icon: Brain, color: "text-[#8bbcd4]" },
+      ]
+    },
+    {
+      title: "Databases & Storage ()",
+      items: [
+        { name: "MySQL", icon: Database, color: "text-[#70a9a1]" },
+        { name: "SQL Server", icon: Database, color: "text-[#8bbcd4]" },
+      ]
+    },
+    {
+      title: "Cloud & DevOps ()",
+      items: [
+        { name: "AWS Beanstalk", icon: Globe, color: "text-[#70a9a1]" },
+        { name: "Streamlit Cloud", icon: Layers, color: "text-[#8bbcd4]" },
+        { name: "Git / GitHub", icon: FolderGit2, color: "text-[#70a9a1]" },
+        { name: "GitHub Actions", icon: Cpu, color: "text-[#8bbcd4]" },
+      ]
+    },
+    {
+      title: "System Admin ()",
+      items: [
+        { name: "MikroTik Winbox", icon: Terminal, color: "text-[#70a9a1]" },
+        { name: "Active Directory", icon: Cpu, color: "text-[#8bbcd4]" },
+      ]
+    }
+  ];
+
   const projects: Project[] = [
     {
       id: 'my-hygiene',
@@ -120,7 +126,7 @@ const skillCategories = [
       summary: 'Transforms children hygiene learning using MediaPipe computer vision gesture tracking[cite: 1].',
       highlights: [
         'Built with Unity 2D & C# for primary school health education[cite: 1].',
-        'Real-time physical gesture detection (hand washing & smiling) using MediaPipe[cite: 1].',
+        'Real-time physical gesture detection using MediaPipe[cite: 1].',
         'Awarded Best Booth at FYPro-Com Exhibition (SEM 1 2025/2026)[cite: 1].'
       ],
       techStack: ['Unity 2D', 'C#', 'MediaPipe', 'Computer Vision'],
@@ -201,21 +207,32 @@ const skillCategories = [
     : projects.filter(p => p.category === activeTab);
 
   return (
-    <div className="relative min-h-screen starry-bg selection:bg-[#3b7a75] selection:text-[#e2f1f8]">
-      <FogOverlay />
+    <div className="relative min-h-screen starry-bg selection:bg-[#3b7a75] selection:text-[#e2f1f8] w-full overflow-x-hidden">
+      
+      {/* Moving Celestial Moon */}
+      <div className="moving-moon" />
+
+      {/* Atmospheric Dense Smoke/Fog */}
+      <div className="smoke-wrapper">
+        <div className="smoke-layer smoke-1" />
+        <div className="smoke-layer smoke-2" />
+      </div>
+
+      {/* Bottom Pine Tree Silhouettes */}
+      <div className="pine-forest-bg" />
 
       {/* Floating Ambient Sound Button */}
       <button
         onClick={toggleAudio}
-        className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full twilight-card text-[#70a9a1] hover:text-[#e2f1f8] hover:border-[#70a9a1] transition-all flex items-center gap-2 text-xs shadow-2xl"
+        className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full twilight-card text-[#70a9a1] hover:text-[#e2f1f8] transition-all flex items-center gap-2 text-xs shadow-2xl"
       >
         {isPlayingAudio ? <Volume2 size={18} className="animate-pulse" /> : <VolumeX size={18} />}
-        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Sound: ON' : 'Atmosphere'}</span>
+        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Mist Sound: ON' : 'Atmosphere'}</span>
       </button>
 
-      {/* Sticky Top Navbar like your screenshot */}
+      {/* Sticky Top Navbar */}
       <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#04070c]/70 border-b border-[#3b7a75]/20">
-        <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
+        <div className="w-full max-w-[1400px] mx-auto px-6 sm:px-12 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Moon className="text-[#70a9a1] fill-[#70a9a1]" size={22} />
             <span className="font-cinzel text-xl font-bold tracking-widest text-[#e2f1f8]">
@@ -223,7 +240,7 @@ const skillCategories = [
             </span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm text-[#8ba2b5]">
+          <nav className="hidden lg:flex items-center gap-8 text-sm text-[#8ba2b5]">
             <a href="#home" className="hover:text-[#e2f1f8] transition-colors">Home</a>
             <a href="#skills" className="hover:text-[#e2f1f8] transition-colors">Skills</a>
             <a href="#timeline" className="hover:text-[#e2f1f8] transition-colors">Education</a>
@@ -231,30 +248,49 @@ const skillCategories = [
             <a href="#experience" className="hover:text-[#e2f1f8] transition-colors">Experience</a>
           </nav>
 
-          <a
-            href="https://spotify.com"
-            target="_blank"
-            rel="noreferrer"
-            className="px-4 py-1.5 rounded-full bg-[#10202e] border border-[#3b7a75]/40 text-xs text-[#8bbcd4] flex items-center gap-2 hover:border-[#70a9a1] transition-all"
-          >
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            Spotify
-          </a>
+          {/* Twilight Saga Movie Themes Switcher */}
+          <div className="flex items-center gap-1.5 twilight-card px-3 py-1.5 rounded-full text-xs">
+            <Film size={14} className="text-[#70a9a1] mr-1 hidden sm:block" />
+            <button 
+              onClick={() => setTheme('twilight')} 
+              className={`px-2 py-1 rounded-full transition-all ${theme === 'twilight' ? 'bg-[#70a9a1] text-[#04070c] font-bold' : 'text-[#8ba2b5]'}`}
+            >
+              1. Twilight
+            </button>
+            <button 
+              onClick={() => setTheme('new-moon')} 
+              className={`px-2 py-1 rounded-full transition-all ${theme === 'new-moon' ? 'bg-amber-600 text-black font-bold' : 'text-[#8ba2b5]'}`}
+            >
+              2. New Moon
+            </button>
+            <button 
+              onClick={() => setTheme('eclipse')} 
+              className={`px-2 py-1 rounded-full transition-all ${theme === 'eclipse' ? 'bg-rose-600 text-white font-bold' : 'text-[#8ba2b5]'}`}
+            >
+              3. Eclipse
+            </button>
+            <button 
+              onClick={() => setTheme('breaking-dawn')} 
+              className={`px-2 py-1 rounded-full transition-all ${theme === 'breaking-dawn' ? 'bg-yellow-500 text-black font-bold' : 'text-[#8ba2b5]'}`}
+            >
+              4. Breaking Dawn
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Main Full-Width Container */}
-      <main className="relative z-10 max-w-7xl mx-auto px-6 py-16 flex flex-col gap-32">
+      {/* Main Container - EXPANDED TO FULL SCREEN WIDTH */}
+      <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 sm:px-12 py-16 flex flex-col gap-32">
         
         {/* --- SECTION 1: HERO HOME --- */}
-        <section id="home" className="flex flex-col items-center text-center pt-8">
+        <section id="home" className="w-full flex flex-col items-center text-center pt-6">
           <div className="profile-aura-frame mb-8 floating-card">
-            <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full overflow-hidden border-2 border-[#04070c]">
+            <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full overflow-hidden border-2 border-[#04070c]">
               <Image
                 src="/profile.jpg"
                 alt="Siti Nur Maisarah"
                 fill
-                sizes="(max-width: 640px) 160px, 192px"
+                sizes="(max-width: 640px) 176px, 208px"
                 className="object-cover hover:scale-105 transition-transform duration-500"
                 priority
               />
@@ -269,12 +305,12 @@ const skillCategories = [
             Siti Nur Maisarah
           </h1>
 
-          <p className="text-lg sm:text-2xl text-[#8bbcd4] max-w-3xl font-light leading-relaxed">
+          <p className="text-lg sm:text-2xl text-[#8bbcd4] max-w-4xl font-light leading-relaxed">
             Full-Stack Developer • Game Engineer • AI/ML Integrator
           </p>
 
-          <p className="mt-4 text-sm text-[#8ba2b5] max-w-2xl leading-relaxed font-light">
-            Computer Science Graduate from Universiti Malaysia Pahang Al-Sultan Abdullah (CGPA 3.52)[cite: 1]. Crafting production web applications, computer vision interactive games, and cloud solutions[cite: 1].
+          <p className="mt-4 text-sm sm:text-base text-[#8ba2b5] max-w-3xl leading-relaxed font-light">
+            Computer Science Graduate from Universiti Malaysia Pahang Al-Sultan Abdullah (CGPA 3.52)[cite: 1]. Crafting production web applications, computer vision interactive games, and cloud solutions under evergreen misty skies[cite: 1].
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -295,59 +331,50 @@ const skillCategories = [
           </div>
         </section>
 
-      {/* --- SECTION 2: CATEGORIZED TECH STACK --- */}
-<section id="skills" className="w-full flex flex-col items-center gap-12">
-  
-  {/* Section Header */}
-  <div className="flex items-center gap-4 w-full justify-center">
-    <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#3b7a75]/40" />
-    <h2 className="font-cinzel text-3xl sm:text-4xl text-[#e2f1f8] tracking-wider text-center">
-      &lt; <span className="shimmer-text">Tech Stack</span> /&gt;
-    </h2>
-    <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#3b7a75]/40" />
-  </div>
+        {/* --- SECTION 2: TECH STACK --- */}
+        <section id="skills" className="w-full flex flex-col items-center gap-12">
+          <div className="flex items-center gap-4 w-full justify-center">
+            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#3b7a75]/40" />
+            <h2 className="font-cinzel text-3xl sm:text-4xl text-[#e2f1f8] tracking-wider text-center">
+              &lt; <span className="shimmer-text">Tech Stack</span> /&gt;
+            </h2>
+            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#3b7a75]/40" />
+          </div>
 
-  {/* 2-Column Grid Categories Container */}
-  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-10">
-    {skillCategories.map((category, catIdx) => (
-      <div key={catIdx} className="flex flex-col gap-4">
-        
-        {/* Category Subheading */}
-        <h3 className="font-cinzel text-lg text-[#e2f1f8] text-center md:text-left flex items-center justify-center md:justify-start gap-2">
-          <span>{category.title.split(' ')[0]}</span>
-          <span className="text-[#70a9a1] text-sm font-mono">{category.title.split(' ')[1]} {category.title.split(' ')[2]}</span>
-        </h3>
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {skillCategories.map((category, catIdx) => (
+              <div key={catIdx} className="twilight-card rounded-2xl p-6 flex flex-col gap-4 border border-[#3b7a75]/30">
+                <h3 className="font-cinzel text-base text-[#e2f1f8] flex items-center gap-2">
+                  <span>{category.title.split(' ')[0]}</span>
+                  <span className="text-[#70a9a1] text-xs font-mono">{category.title.split(' ')[1]}</span>
+                </h3>
 
-        {/* Skill Card Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {category.items.map((item, itemIdx) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={itemIdx}
-                className="twilight-card vampire-sparkle p-4 rounded-xl flex flex-col items-center justify-center gap-2 border border-[#3b7a75]/30 hover:border-[#70a9a1] transition-all group cursor-pointer"
-              >
-                <Icon className={`${item.color} group-hover:scale-110 transition-transform duration-300`} size={24} />
-                <span className="text-xs font-medium text-[#e2f1f8] font-sans text-center">{item.name}</span>
+                <div className="grid grid-cols-2 gap-3">
+                  {category.items.map((item, itemIdx) => {
+                    const Icon = item.icon;
+                    return (
+                      <div
+                        key={itemIdx}
+                        className="bg-[#04070c]/60 p-3.5 rounded-xl flex items-center gap-3 border border-[#3b7a75]/20 hover:border-[#70a9a1] transition-all group cursor-pointer"
+                      >
+                        <Icon className={`${item.color} group-hover:scale-110 transition-transform`} size={20} />
+                        <span className="text-xs font-medium text-[#e2f1f8] font-sans">{item.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        </section>
 
-      </div>
-    ))}
-  </div>
-
-</section>
-
-        {/* --- SECTION 3: EDUCATION TIMELINE (BAR GRAPH LIKE SCREENSHOT) --- */}
-        <section id="timeline" className="twilight-card rounded-3xl p-8 sm:p-12 border border-[#3b7a75]/30">
+        {/* --- SECTION 3: EDUCATION TIMELINE --- */}
+        <section id="timeline" className="w-full twilight-card rounded-3xl p-8 sm:p-12 border border-[#3b7a75]/30">
           <h2 className="font-cinzel text-3xl text-[#e2f1f8] tracking-wider text-center mb-10">
             Education Timeline
           </h2>
 
-          <div className="space-y-8 max-w-4xl mx-auto">
-            {/* Timeline Year Axis */}
+          <div className="space-y-8 max-w-5xl mx-auto">
             <div className="grid grid-cols-6 text-center text-xs font-mono text-[#70a9a1] border-b border-[#3b7a75]/20 pb-2">
               <span>2021</span>
               <span>2022</span>
@@ -357,7 +384,6 @@ const skillCategories = [
               <span>2026</span>
             </div>
 
-            {/* Diploma Bar */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h3 className="text-sm font-semibold text-[#e2f1f8]">Diploma in Computer Science</h3>
@@ -370,7 +396,6 @@ const skillCategories = [
               </div>
             </div>
 
-            {/* Bachelor Bar */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h3 className="text-sm font-semibold text-[#e2f1f8]">Bachelor of Computer Science (Graphics & Multimedia)</h3>
@@ -385,8 +410,8 @@ const skillCategories = [
           </div>
         </section>
 
-        {/* --- SECTION 4: PROJECT ARCHIVES --- */}
-        <section id="projects" className="flex flex-col gap-10">
+        {/* --- SECTION 4: PROJECTS --- */}
+        <section id="projects" className="w-full flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-[#3b7a75]/20 pb-6">
             <div>
               <div className="flex items-center gap-2 text-[#70a9a1] mb-2">
@@ -413,7 +438,7 @@ const skillCategories = [
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project) => (
               <div 
                 key={project.id} 
@@ -448,7 +473,7 @@ const skillCategories = [
         </section>
 
         {/* --- SECTION 5: WORK EXPERIENCE & CERTIFICATIONS --- */}
-        <section id="experience" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section id="experience" className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="twilight-card rounded-2xl p-8 border border-[#3b7a75]/30 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-3 mb-4 text-[#70a9a1]">
@@ -490,7 +515,7 @@ const skillCategories = [
         </section>
 
         {/* --- FOOTER --- */}
-        <footer className="pt-16 border-t border-[#3b7a75]/20 flex flex-col items-center justify-center text-center gap-6 text-xs text-[#8ba2b5]">
+        <footer className="w-full pt-16 border-t border-[#3b7a75]/20 flex flex-col items-center justify-center text-center gap-6 text-xs text-[#8ba2b5]">
           <p className="font-cinzel tracking-widest text-[#e2f1f8]">
             &ldquo;And so the lion fell in love with the lamb...&rdquo;
           </p>

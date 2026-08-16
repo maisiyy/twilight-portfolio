@@ -5,128 +5,158 @@
   --font-sans: var(--font-inter), sans-serif;
 }
 
+:root {
+  /* Default Theme: Twilight (Cool Blue / Pacific NW Cyan) */
+  --bg-color: #04070c;
+  --card-bg: rgba(10, 18, 28, 0.75);
+  --accent-color: #70a9a1;
+  --glow-color: #8bbcd4;
+  --text-main: #e2f1f8;
+  --border-color: rgba(112, 169, 161, 0.3);
+}
+
+/* Movie Themes */
+[data-theme="twilight"] {
+  --bg-color: #04070c;
+  --card-bg: rgba(10, 18, 28, 0.75);
+  --accent-color: #70a9a1;
+  --glow-color: #8bbcd4;
+  --text-main: #e2f1f8;
+  --border-color: rgba(112, 169, 161, 0.3);
+}
+
+[data-theme="new-moon"] {
+  --bg-color: #0d0905;
+  --card-bg: rgba(28, 18, 10, 0.75);
+  --accent-color: #d97706;
+  --glow-color: #f59e0b;
+  --text-main: #fef3c7;
+  --border-color: rgba(217, 119, 6, 0.3);
+}
+
+[data-theme="eclipse"] {
+  --bg-color: #080305;
+  --card-bg: rgba(26, 10, 18, 0.75);
+  --accent-color: #e11d48;
+  --glow-color: #f43f5e;
+  --text-main: #ffe4e6;
+  --border-color: rgba(225, 29, 72, 0.3);
+}
+
+[data-theme="breaking-dawn"] {
+  --bg-color: #080703;
+  --card-bg: rgba(25, 22, 12, 0.75);
+  --accent-color: #eab308;
+  --glow-color: #fde047;
+  --text-main: #fefce8;
+  --border-color: rgba(234, 179, 8, 0.35);
+}
+
 @layer base {
   body {
-    background-color: #04070c;
-    color: #e2f1f8;
+    background-color: var(--bg-color);
+    color: var(--text-main);
     overflow-x: hidden;
     position: relative;
+    transition: background-color 0.8s ease, color 0.8s ease;
   }
 }
 
-/* --- ISOLATED STARRY BG (ONLY STARS TWINKLE) --- */
-.starry-bg::before {
-  content: "";
+/* --- ORBITAL MOVING MOON --- */
+.moving-moon {
+  position: fixed;
+  top: 8%;
+  left: -10%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #d4e8f5 50%, #70a9a1 100%);
+  box-shadow: 0 0 50px rgba(226, 241, 248, 0.6), 0 0 100px var(--glow-color);
+  z-index: 1;
+  pointer-events: none;
+  animation: moonOrbit 65s linear infinite;
+}
+
+@keyframes moonOrbit {
+  0% { transform: translateX(0vw) translateY(0vh); opacity: 0.2; }
+  10% { opacity: 0.9; }
+  90% { opacity: 0.9; }
+  100% { transform: translateX(115vw) translateY(15vh); opacity: 0.1; }
+}
+
+/* --- DENSE REALISTIC SMOKE / FOG LAYERS --- */
+.smoke-wrapper {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
-  background-image: 
-    radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, rgba(0, 0, 0, 0)),
-    radial-gradient(2px 2px at 100px 150px, #d4f0ff, rgba(0, 0, 0, 0)),
-    radial-gradient(1px 1px at 200px 80px, #8bbcd4, rgba(0, 0, 0, 0)),
-    radial-gradient(2.5px 2.5px at 300px 260px, #ffffff, rgba(0, 0, 0, 0)),
-    radial-gradient(1.5px 1.5px at 400px 120px, #b2e2f8, rgba(0, 0, 0, 0));
-  background-repeat: repeat;
-  background-size: 500px 500px;
-  animation: starTwinkle 4s infinite ease-in-out alternate;
-}
-
-@keyframes starTwinkle {
-  0% { opacity: 0.2; }
-  100% { opacity: 0.75; }
-}
-
-/* --- TWILIGHT SPARKLE EFFECT (ON CARD HOVER) --- */
-.vampire-sparkle {
-  position: relative;
+  z-index: 2;
   overflow: hidden;
+  opacity: 0.45;
 }
 
-.vampire-sparkle::after {
-  content: "";
+.smoke-layer {
   position: absolute;
-  top: -100%;
-  left: -100%;
-  width: 300%;
-  height: 300%;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.05) 40%,
-    rgba(186, 230, 253, 0.25) 50%,
-    rgba(255, 255, 255, 0.05) 60%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transition: transform 0.8s ease-in-out;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.18) 0%, rgba(112, 169, 161, 0.08) 45%, transparent 70%);
+  filter: blur(50px);
+  will-change: transform;
+}
+
+.smoke-1 {
+  top: -30%;
+  left: -50%;
+  animation: floatSmoke1 38s linear infinite alternate;
+}
+
+.smoke-2 {
+  bottom: -40%;
+  right: -50%;
+  animation: floatSmoke2 52s linear infinite alternate;
+}
+
+@keyframes floatSmoke1 {
+  0% { transform: translate3d(-10%, -5%, 0) rotate(0deg) scale(1); }
+  50% { transform: translate3d(8%, 12%, 0) rotate(10deg) scale(1.2); }
+  100% { transform: translate3d(15%, -8%, 0) rotate(-5deg) scale(1.05); }
+}
+
+@keyframes floatSmoke2 {
+  0% { transform: translate3d(10%, 10%, 0) rotate(0deg) scale(1.1); }
+  50% { transform: translate3d(-10%, -12%, 0) rotate(-12deg) scale(1.25); }
+  100% { transform: translate3d(-15%, 8%, 0) rotate(8deg) scale(1); }
+}
+
+/* --- BOTTOM PINE FOREST SILHOUETTE --- */
+.pine-forest-bg {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 320px;
   pointer-events: none;
-  transform: translate(-100%, -100%) rotate(45deg);
+  z-index: 3;
+  opacity: 0.65;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 15px,
+    rgba(4, 7, 12, 0.9) 15px,
+    rgba(4, 7, 12, 0.9) 30px
+  );
+  mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
 }
 
-.vampire-sparkle:hover::after {
-  transform: translate(100%, 100%) rotate(45deg);
-}
-
-/* --- DEEP GLASSMORPHISM --- */
+/* --- DEEP GLASS CARDS WITH THEME BORDER --- */
 .twilight-card {
-  background: rgba(10, 18, 28, 0.7);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(112, 169, 161, 0.25);
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6);
+  background: var(--card-bg);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
+  transition: all 0.4s ease;
 }
 
 .twilight-card:hover {
-  border-color: rgba(139, 188, 212, 0.6);
-  box-shadow: 0 0 25px rgba(112, 169, 161, 0.25);
-}
-
-/* --- PROFILE PICTURE VAMPIRE AURA FRAME --- */
-.profile-aura-frame {
-  position: relative;
-  border-radius: 9999px;
-  padding: 4px;
-  background: linear-gradient(135deg, rgba(112, 169, 161, 0.6), rgba(139, 188, 212, 0.2), rgba(59, 122, 117, 0.8));
-  box-shadow: 0 0 35px rgba(112, 169, 161, 0.35);
-  animation: auraGlow 6s ease-in-out infinite alternate;
-}
-
-@keyframes auraGlow {
-  0% {
-    box-shadow: 0 0 25px rgba(112, 169, 161, 0.3);
-    border-color: rgba(112, 169, 161, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 45px rgba(139, 188, 212, 0.6);
-    border-color: rgba(139, 188, 212, 0.8);
-  }
-  100% {
-    box-shadow: 0 0 30px rgba(112, 169, 161, 0.4);
-    border-color: rgba(112, 169, 161, 0.5);
-  }
-}
-
-/* --- DYNAMIC CARD FLOAT ANIMATION --- */
-.floating-card {
-  animation: floatSlow 7s ease-in-out infinite alternate;
-}
-
-@keyframes floatSlow {
-  0% { transform: translateY(0px); }
-  100% { transform: translateY(-8px); }
-}
-
-/* --- SHIMMER TEXT EFFECT --- */
-.shimmer-text {
-  background: linear-gradient(90deg, #e2f1f8 0%, #70a9a1 50%, #e2f1f8 100%);
-  background-size: 200% auto;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: textShimmer 5s linear infinite;
-}
-
-@keyframes textShimmer {
-  to {
-    background-position: 200% center;
-  }
+  border-color: var(--accent-color);
+  box-shadow: 0 0 25px var(--border-color);
 }
