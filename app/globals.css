@@ -5,51 +5,59 @@
   --font-sans: var(--font-inter), sans-serif;
 }
 
-:root {
-  /* Default Theme: Twilight (Cool Blue / Pacific NW Cyan) */
-  --bg-color: #04070c;
-  --card-bg: rgba(10, 18, 28, 0.75);
-  --accent-color: #70a9a1;
-  --glow-color: #8bbcd4;
-  --text-main: #e2f1f8;
-  --border-color: rgba(112, 169, 161, 0.3);
+html {
+  scroll-behavior: smooth;
 }
 
-/* Movie Themes */
-[data-theme="twilight"] {
-  --bg-color: #04070c;
-  --card-bg: rgba(10, 18, 28, 0.75);
+:root {
+  /* Twilight Default */
+  --bg-color: #03060a;
+  --card-bg: rgba(10, 18, 28, 0.82);
   --accent-color: #70a9a1;
   --glow-color: #8bbcd4;
   --text-main: #e2f1f8;
-  --border-color: rgba(112, 169, 161, 0.3);
+  --border-color: rgba(112, 169, 161, 0.35);
+  --tree-tint: rgba(112, 169, 161, 0.15);
+}
+
+[data-theme="twilight"] {
+  --bg-color: #03060a;
+  --card-bg: rgba(10, 18, 28, 0.82);
+  --accent-color: #70a9a1;
+  --glow-color: #8bbcd4;
+  --text-main: #e2f1f8;
+  --border-color: rgba(112, 169, 161, 0.35);
+  --tree-tint: rgba(112, 169, 161, 0.15);
 }
 
 [data-theme="new-moon"] {
-  --bg-color: #0d0905;
-  --card-bg: rgba(28, 18, 10, 0.75);
+  --bg-color: #0c0804;
+  --card-bg: rgba(26, 17, 10, 0.82);
   --accent-color: #d97706;
   --glow-color: #f59e0b;
   --text-main: #fef3c7;
-  --border-color: rgba(217, 119, 6, 0.3);
+  --border-color: rgba(217, 119, 6, 0.35);
+  --tree-tint: rgba(217, 119, 6, 0.15);
 }
 
 [data-theme="eclipse"] {
-  --bg-color: #080305;
-  --card-bg: rgba(26, 10, 18, 0.75);
+  --bg-color: #0a0305;
+  --card-bg: rgba(28, 10, 18, 0.82);
   --accent-color: #e11d48;
   --glow-color: #f43f5e;
   --text-main: #ffe4e6;
-  --border-color: rgba(225, 29, 72, 0.3);
+  --border-color: rgba(225, 29, 72, 0.35);
+  --tree-tint: rgba(225, 29, 72, 0.15);
 }
 
 [data-theme="breaking-dawn"] {
-  --bg-color: #080703;
-  --card-bg: rgba(25, 22, 12, 0.75);
+  --bg-color: #090803;
+  --card-bg: rgba(28, 24, 12, 0.82);
   --accent-color: #eab308;
   --glow-color: #fde047;
   --text-main: #fefce8;
-  --border-color: rgba(234, 179, 8, 0.35);
+  --border-color: rgba(234, 179, 8, 0.4);
+  --tree-tint: rgba(234, 179, 8, 0.15);
 }
 
 @layer base {
@@ -62,101 +70,108 @@
   }
 }
 
-/* --- ORBITAL MOVING MOON --- */
+/* --- ANIMATED MOON WITH GLOW PARALLAX --- */
 .moving-moon {
   position: fixed;
-  top: 8%;
-  left: -10%;
-  width: 120px;
-  height: 120px;
+  top: 5%;
+  left: -8%;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #d4e8f5 50%, #70a9a1 100%);
-  box-shadow: 0 0 50px rgba(226, 241, 248, 0.6), 0 0 100px var(--glow-color);
-  z-index: 1;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #d4e8f5 55%, var(--accent-color) 100%);
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.5), 0 0 120px var(--glow-color);
+  z-index: 2;
   pointer-events: none;
-  animation: moonOrbit 65s linear infinite;
+  animation: moonOrbit 70s linear infinite;
+  transition: box-shadow 0.8s ease, background 0.8s ease;
 }
 
 @keyframes moonOrbit {
   0% { transform: translateX(0vw) translateY(0vh); opacity: 0.2; }
-  10% { opacity: 0.9; }
-  90% { opacity: 0.9; }
-  100% { transform: translateX(115vw) translateY(15vh); opacity: 0.1; }
+  10% { opacity: 0.95; }
+  90% { opacity: 0.95; }
+  100% { transform: translateX(115vw) translateY(20vh); opacity: 0.1; }
 }
 
-/* --- DENSE REALISTIC SMOKE / FOG LAYERS --- */
+/* --- DETAILED CANOPY PINE FOREST FRAME --- */
+.pine-canopy-left, .pine-canopy-right {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 22vw;
+  max-width: 320px;
+  min-width: 160px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.75;
+  background-repeat: repeat-y;
+  background-size: contain;
+  filter: drop-shadow(0 0 15px rgba(0,0,0,0.9));
+  transition: filter 0.8s ease;
+}
+
+.pine-canopy-left {
+  left: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 800' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L40,60 L20,80 L60,150 L30,170 L80,260 L35,290 L90,400 L40,430 L85,550 L30,580 L75,700 L20,730 L60,800 L0,800 Z' fill='%23020406'/%3E%3Cpath d='M0,0 L25,40 L12,55 L40,110 L20,130 L55,200 L25,225 L65,310 L30,335 L60,430 L20,455 L55,550 L15,575 L45,670 L0,710 Z' fill='%23050b10' opacity='0.7'/%3E%3C/svg%3E");
+}
+
+.pine-canopy-right {
+  right: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 800' preserveAspectRatio='none'%3E%3Cpath d='M100,0 L60,60 L80,80 L40,150 L70,170 L20,260 L65,290 L10,400 L60,430 L15,550 L70,580 L25,700 L80,730 L40,800 L100,800 Z' fill='%23020406'/%3E%3Cpath d='M100,0 L75,40 L88,55 L60,110 L80,130 L45,200 L75,225 L35,310 L70,335 L40,430 L80,455 L45,550 L85,575 L55,670 L100,710 Z' fill='%23050b10' opacity='0.7'/%3E%3C/svg%3E");
+}
+
+/* --- DENSE ATMOSPHERIC MIST & SMOKE --- */
 .smoke-wrapper {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
   overflow: hidden;
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
 .smoke-layer {
   position: absolute;
   width: 200%;
   height: 200%;
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.18) 0%, rgba(112, 169, 161, 0.08) 45%, transparent 70%);
-  filter: blur(50px);
-  will-change: transform;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.2) 0%, var(--tree-tint) 45%, transparent 70%);
+  filter: blur(60px);
 }
 
 .smoke-1 {
-  top: -30%;
-  left: -50%;
-  animation: floatSmoke1 38s linear infinite alternate;
+  top: -20%;
+  left: -40%;
+  animation: floatSmoke1 42s linear infinite alternate;
 }
 
 .smoke-2 {
-  bottom: -40%;
-  right: -50%;
-  animation: floatSmoke2 52s linear infinite alternate;
+  bottom: -30%;
+  right: -40%;
+  animation: floatSmoke2 55s linear infinite alternate;
 }
 
 @keyframes floatSmoke1 {
-  0% { transform: translate3d(-10%, -5%, 0) rotate(0deg) scale(1); }
-  50% { transform: translate3d(8%, 12%, 0) rotate(10deg) scale(1.2); }
-  100% { transform: translate3d(15%, -8%, 0) rotate(-5deg) scale(1.05); }
+  0% { transform: translate3d(-8%, -5%, 0) rotate(0deg) scale(1); }
+  50% { transform: translate3d(10%, 10%, 0) rotate(8deg) scale(1.2); }
+  100% { transform: translate3d(12%, -6%, 0) rotate(-4deg) scale(1.05); }
 }
 
 @keyframes floatSmoke2 {
-  0% { transform: translate3d(10%, 10%, 0) rotate(0deg) scale(1.1); }
-  50% { transform: translate3d(-10%, -12%, 0) rotate(-12deg) scale(1.25); }
-  100% { transform: translate3d(-15%, 8%, 0) rotate(8deg) scale(1); }
+  0% { transform: translate3d(8%, 8%, 0) rotate(0deg) scale(1.1); }
+  50% { transform: translate3d(-12%, -10%, 0) rotate(-10deg) scale(1.25); }
+  100% { transform: translate3d(-10%, 6%, 0) rotate(6deg) scale(1); }
 }
 
-/* --- BOTTOM PINE FOREST SILHOUETTE --- */
-.pine-forest-bg {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 320px;
-  pointer-events: none;
-  z-index: 3;
-  opacity: 0.65;
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 15px,
-    rgba(4, 7, 12, 0.9) 15px,
-    rgba(4, 7, 12, 0.9) 30px
-  );
-  mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-}
-
-/* --- DEEP GLASS CARDS WITH THEME BORDER --- */
+/* --- GLASS CONTAINER CARDS --- */
 .twilight-card {
   background: var(--card-bg);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
-  transition: all 0.4s ease;
+  box-shadow: 0 12px 45px -10px rgba(0, 0, 0, 0.8);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
 }
 
 .twilight-card:hover {
   border-color: var(--accent-color);
-  box-shadow: 0 0 25px var(--border-color);
+  box-shadow: 0 0 30px var(--border-color);
 }

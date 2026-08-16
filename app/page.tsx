@@ -16,12 +16,10 @@ import {
   VolumeX, 
   Terminal, 
   Cpu, 
-  GraduationCap,
   Layers,
   Database,
   Brain,
   Moon,
-  Trees,
   Film
 } from 'lucide-react';
 
@@ -41,17 +39,74 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [theme, setTheme] = useState<'twilight' | 'new-moon' | 'eclipse' | 'breaking-dawn'>('twilight');
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  // Apply Theme Attribute
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // Animated Twinkling Stars Background Canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    // Star Object Generation
+    const numStars = 180;
+    const stars = Array.from({ length: numStars }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: Math.random() * 1.5 + 0.5,
+      alpha: Math.random(),
+      speed: Math.random() * 0.015 + 0.005,
+    }));
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      stars.forEach((star) => {
+        star.alpha += star.speed;
+        if (star.alpha > 1 || star.alpha < 0) {
+          star.speed = -star.speed;
+        }
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(226, 241, 248, ${Math.max(0, star.alpha)})`;
+        ctx.fill();
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
 
   const toggleAudio = () => {
     if (!audioRef.current) {
       audioRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2516/2516-preview.mp3');
       audioRef.current.loop = true;
-      audioRef.current.volume = 0.3;
+      audioRef.current.volume = 0.35;
     }
 
     if (isPlayingAudio) {
@@ -207,32 +262,37 @@ export default function Home() {
     : projects.filter(p => p.category === activeTab);
 
   return (
-    <div className="relative min-h-screen starry-bg selection:bg-[#3b7a75] selection:text-[#e2f1f8] w-full overflow-x-hidden">
+    <div className="relative min-h-screen selection:bg-[#3b7a75] selection:text-[#e2f1f8] w-full overflow-x-hidden">
       
-      {/* Moving Celestial Moon */}
+      {/* HTML5 Starry Sky Canvas */}
+      <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />
+
+      {/* Orbiting Celestial Moon */}
       <div className="moving-moon" />
 
-      {/* Atmospheric Dense Smoke/Fog */}
+      {/* Realistic Smoke / Mist Layers */}
       <div className="smoke-wrapper">
         <div className="smoke-layer smoke-1" />
         <div className="smoke-layer smoke-2" />
       </div>
 
-      {/* Bottom Pine Tree Silhouettes */}
-      <div className="pine-forest-bg" />
+      {/* Pine Forest Silhouettes Framing Left and Right Edges */}
+      <div className="pine-canopy-left" />
+      <div className="pine-canopy-right" />
 
-      {/* Floating Ambient Sound Button */}
+      {/* Ambient Audio Floating Toggle */}
       <button
         onClick={toggleAudio}
-        className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full twilight-card text-[#70a9a1] hover:text-[#e2f1f8] transition-all flex items-center gap-2 text-xs shadow-2xl"
+        className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full twilight-card text-[#70a9a1] hover:text-[#e2f1f8] transition-all flex items-center gap-2 text-xs shadow-2xl cursor-pointer"
       >
         {isPlayingAudio ? <Volume2 size={18} className="animate-pulse" /> : <VolumeX size={18} />}
-        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Mist Sound: ON' : 'Atmosphere'}</span>
+        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Ambient Fog: ON' : 'Atmosphere'}</span>
       </button>
 
       {/* Sticky Top Navbar */}
-      <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#04070c]/70 border-b border-[#3b7a75]/20">
-        <div className="w-full max-w-[1400px] mx-auto px-6 sm:px-12 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#03060a]/75 border-b border-[#3b7a75]/20">
+        <div className="w-full max-w-[1700px] mx-auto px-6 sm:px-16 py-4 flex items-center justify-between">
+          
           <div className="flex items-center gap-2">
             <Moon className="text-[#70a9a1] fill-[#70a9a1]" size={22} />
             <span className="font-cinzel text-xl font-bold tracking-widest text-[#e2f1f8]">
@@ -240,7 +300,7 @@ export default function Home() {
             </span>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-8 text-sm text-[#8ba2b5]">
+          <nav className="hidden lg:flex items-center gap-10 text-sm text-[#8ba2b5]">
             <a href="#home" className="hover:text-[#e2f1f8] transition-colors">Home</a>
             <a href="#skills" className="hover:text-[#e2f1f8] transition-colors">Skills</a>
             <a href="#timeline" className="hover:text-[#e2f1f8] transition-colors">Education</a>
@@ -248,116 +308,117 @@ export default function Home() {
             <a href="#experience" className="hover:text-[#e2f1f8] transition-colors">Experience</a>
           </nav>
 
-          {/* Twilight Saga Movie Themes Switcher */}
+          {/* 4 Twilight Movie Themes Picker */}
           <div className="flex items-center gap-1.5 twilight-card px-3 py-1.5 rounded-full text-xs">
             <Film size={14} className="text-[#70a9a1] mr-1 hidden sm:block" />
             <button 
               onClick={() => setTheme('twilight')} 
-              className={`px-2 py-1 rounded-full transition-all ${theme === 'twilight' ? 'bg-[#70a9a1] text-[#04070c] font-bold' : 'text-[#8ba2b5]'}`}
+              className={`px-2.5 py-1 rounded-full transition-all cursor-pointer ${theme === 'twilight' ? 'bg-[#70a9a1] text-[#04070c] font-bold' : 'text-[#8ba2b5]'}`}
             >
               1. Twilight
             </button>
             <button 
               onClick={() => setTheme('new-moon')} 
-              className={`px-2 py-1 rounded-full transition-all ${theme === 'new-moon' ? 'bg-amber-600 text-black font-bold' : 'text-[#8ba2b5]'}`}
+              className={`px-2.5 py-1 rounded-full transition-all cursor-pointer ${theme === 'new-moon' ? 'bg-amber-600 text-black font-bold' : 'text-[#8ba2b5]'}`}
             >
               2. New Moon
             </button>
             <button 
               onClick={() => setTheme('eclipse')} 
-              className={`px-2 py-1 rounded-full transition-all ${theme === 'eclipse' ? 'bg-rose-600 text-white font-bold' : 'text-[#8ba2b5]'}`}
+              className={`px-2.5 py-1 rounded-full transition-all cursor-pointer ${theme === 'eclipse' ? 'bg-rose-600 text-white font-bold' : 'text-[#8ba2b5]'}`}
             >
               3. Eclipse
             </button>
             <button 
               onClick={() => setTheme('breaking-dawn')} 
-              className={`px-2 py-1 rounded-full transition-all ${theme === 'breaking-dawn' ? 'bg-yellow-500 text-black font-bold' : 'text-[#8ba2b5]'}`}
+              className={`px-2.5 py-1 rounded-full transition-all cursor-pointer ${theme === 'breaking-dawn' ? 'bg-yellow-500 text-black font-bold' : 'text-[#8ba2b5]'}`}
             >
               4. Breaking Dawn
             </button>
           </div>
+
         </div>
       </header>
 
-      {/* Main Container - EXPANDED TO FULL SCREEN WIDTH */}
-      <main className="relative z-10 w-full max-w-[1400px] mx-auto px-6 sm:px-12 py-16 flex flex-col gap-32">
+      {/* Main Container - EXPANDED WIDE SCREEN (MAX 1700PX) */}
+      <main className="relative z-10 w-full max-w-[1700px] mx-auto px-8 sm:px-20 py-16 flex flex-col gap-36">
         
         {/* --- SECTION 1: HERO HOME --- */}
-        <section id="home" className="w-full flex flex-col items-center text-center pt-6">
-          <div className="profile-aura-frame mb-8 floating-card">
-            <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full overflow-hidden border-2 border-[#04070c]">
+        <section id="home" className="w-full flex flex-col items-center text-center pt-8">
+          <div className="relative mb-8">
+            <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-2 border-[#70a9a1]/40 shadow-[0_0_50px_rgba(112,169,161,0.25)]">
               <Image
                 src="/profile.jpg"
                 alt="Siti Nur Maisarah"
                 fill
-                sizes="(max-width: 640px) 176px, 208px"
+                sizes="(max-width: 640px) 192px, 224px"
                 className="object-cover hover:scale-105 transition-transform duration-500"
                 priority
               />
             </div>
           </div>
 
-          <p className="font-cinzel text-xs text-[#70a9a1] tracking-[0.3em] uppercase mb-3 animate-pulse">
+          <p className="font-cinzel text-xs text-[#70a9a1] tracking-[0.35em] uppercase mb-3 animate-pulse">
             &ldquo;About three things I was absolutely positive...&rdquo;
           </p>
 
-          <h1 className="font-cinzel text-5xl sm:text-7xl tracking-widest uppercase drop-shadow-[0_0_35px_rgba(112,169,161,0.4)] mb-4 shimmer-text">
+          <h1 className="font-cinzel text-5xl sm:text-7xl lg:text-8xl tracking-widest uppercase drop-shadow-[0_0_35px_rgba(112,169,161,0.4)] mb-4">
             Siti Nur Maisarah
           </h1>
 
-          <p className="text-lg sm:text-2xl text-[#8bbcd4] max-w-4xl font-light leading-relaxed">
+          <p className="text-xl sm:text-3xl text-[#8bbcd4] max-w-5xl font-light leading-relaxed">
             Full-Stack Developer • Game Engineer • AI/ML Integrator
           </p>
 
-          <p className="mt-4 text-sm sm:text-base text-[#8ba2b5] max-w-3xl leading-relaxed font-light">
+          <p className="mt-4 text-sm sm:text-lg text-[#8ba2b5] max-w-4xl leading-relaxed font-light">
             Computer Science Graduate from Universiti Malaysia Pahang Al-Sultan Abdullah (CGPA 3.52)[cite: 1]. Crafting production web applications, computer vision interactive games, and cloud solutions under evergreen misty skies[cite: 1].
           </p>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <div className="mt-10 flex flex-wrap justify-center gap-5">
             <a
               href="#projects"
-              className="px-8 py-3.5 rounded-xl bg-[#10202e] text-[#e2f1f8] border border-[#3b7a75]/50 flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium hover:border-[#8bbcd4] hover:shadow-[0_0_20px_rgba(112,169,161,0.4)] transition-all"
+              className="px-8 py-4 rounded-xl bg-[#0c1a26] text-[#e2f1f8] border border-[#3b7a75]/60 flex items-center gap-3 text-xs tracking-wider uppercase font-medium hover:border-[#8bbcd4] hover:shadow-[0_0_25px_rgba(112,169,161,0.4)] transition-all"
             >
-              <Terminal size={16} className="text-[#70a9a1]" />
+              <Terminal size={18} className="text-[#70a9a1]" />
               Explore Projects
             </a>
             <a
               href="mailto:maisarahmzn@gmail.com"
-              className="px-8 py-3.5 rounded-xl twilight-card text-[#8ba2b5] hover:text-[#e2f1f8] flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium transition-all"
+              className="px-8 py-4 rounded-xl twilight-card text-[#8ba2b5] hover:text-[#e2f1f8] flex items-center gap-3 text-xs tracking-wider uppercase font-medium transition-all"
             >
-              <Mail size={16} />
+              <Mail size={18} />
               Get In Touch
             </a>
           </div>
         </section>
 
         {/* --- SECTION 2: TECH STACK --- */}
-        <section id="skills" className="w-full flex flex-col items-center gap-12">
-          <div className="flex items-center gap-4 w-full justify-center">
+        <section id="skills" className="w-full flex flex-col items-center gap-14 scroll-mt-28">
+          <div className="flex items-center gap-6 w-full justify-center">
             <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#3b7a75]/40" />
-            <h2 className="font-cinzel text-3xl sm:text-4xl text-[#e2f1f8] tracking-wider text-center">
-              &lt; <span className="shimmer-text">Tech Stack</span> /&gt;
+            <h2 className="font-cinzel text-3xl sm:text-5xl text-[#e2f1f8] tracking-wider text-center">
+              &lt; Tech Stack /&gt;
             </h2>
             <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#3b7a75]/40" />
           </div>
 
           <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {skillCategories.map((category, catIdx) => (
-              <div key={catIdx} className="twilight-card rounded-2xl p-6 flex flex-col gap-4 border border-[#3b7a75]/30">
-                <h3 className="font-cinzel text-base text-[#e2f1f8] flex items-center gap-2">
+              <div key={catIdx} className="twilight-card rounded-2xl p-7 flex flex-col gap-5 border border-[#3b7a75]/30">
+                <h3 className="font-cinzel text-lg text-[#e2f1f8] flex items-center gap-2">
                   <span>{category.title.split(' ')[0]}</span>
                   <span className="text-[#70a9a1] text-xs font-mono">{category.title.split(' ')[1]}</span>
                 </h3>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3.5">
                   {category.items.map((item, itemIdx) => {
                     const Icon = item.icon;
                     return (
                       <div
                         key={itemIdx}
-                        className="bg-[#04070c]/60 p-3.5 rounded-xl flex items-center gap-3 border border-[#3b7a75]/20 hover:border-[#70a9a1] transition-all group cursor-pointer"
+                        className="bg-[#04070c]/70 p-4 rounded-xl flex items-center gap-3 border border-[#3b7a75]/20 hover:border-[#70a9a1] transition-all group cursor-pointer"
                       >
-                        <Icon className={`${item.color} group-hover:scale-110 transition-transform`} size={20} />
+                        <Icon className={`${item.color} group-hover:scale-110 transition-transform`} size={22} />
                         <span className="text-xs font-medium text-[#e2f1f8] font-sans">{item.name}</span>
                       </div>
                     );
@@ -369,13 +430,13 @@ export default function Home() {
         </section>
 
         {/* --- SECTION 3: EDUCATION TIMELINE --- */}
-        <section id="timeline" className="w-full twilight-card rounded-3xl p-8 sm:p-12 border border-[#3b7a75]/30">
-          <h2 className="font-cinzel text-3xl text-[#e2f1f8] tracking-wider text-center mb-10">
+        <section id="timeline" className="w-full twilight-card rounded-3xl p-10 sm:p-16 border border-[#3b7a75]/30 scroll-mt-28">
+          <h2 className="font-cinzel text-3xl sm:text-4xl text-[#e2f1f8] tracking-wider text-center mb-12">
             Education Timeline
           </h2>
 
-          <div className="space-y-8 max-w-5xl mx-auto">
-            <div className="grid grid-cols-6 text-center text-xs font-mono text-[#70a9a1] border-b border-[#3b7a75]/20 pb-2">
+          <div className="space-y-10 max-w-6xl mx-auto">
+            <div className="grid grid-cols-6 text-center text-xs font-mono text-[#70a9a1] border-b border-[#3b7a75]/20 pb-3">
               <span>2021</span>
               <span>2022</span>
               <span>2023</span>
@@ -384,25 +445,25 @@ export default function Home() {
               <span>2026</span>
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                <h3 className="text-sm font-semibold text-[#e2f1f8]">Diploma in Computer Science</h3>
+                <h3 className="text-base font-semibold text-[#e2f1f8]">Diploma in Computer Science</h3>
                 <p className="text-xs text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.51[cite: 1]</p>
               </div>
-              <div className="w-full md:w-2/3 bg-[#04070c] rounded-full h-8 p-1 border border-[#3b7a75]/20 relative">
-                <div className="w-2/5 h-full rounded-full bg-gradient-to-r from-sky-400 to-cyan-400 flex items-center justify-center text-[11px] font-mono font-bold text-slate-950">
+              <div className="w-full md:w-3/4 bg-[#04070c] rounded-full h-9 p-1 border border-[#3b7a75]/20 relative">
+                <div className="w-2/5 h-full rounded-full bg-gradient-to-r from-sky-400 to-cyan-400 flex items-center justify-center text-xs font-mono font-bold text-slate-950">
                   2021 - 2023[cite: 1]
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                <h3 className="text-sm font-semibold text-[#e2f1f8]">Bachelor of Computer Science (Graphics & Multimedia)</h3>
+                <h3 className="text-base font-semibold text-[#e2f1f8]">Bachelor of Computer Science (Graphics & Multimedia)</h3>
                 <p className="text-xs text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.52[cite: 1]</p>
               </div>
-              <div className="w-full md:w-2/3 bg-[#04070c] rounded-full h-8 p-1 border border-[#3b7a75]/20 relative flex justify-end">
-                <div className="w-3/5 h-full rounded-full bg-gradient-to-r from-pink-500 to-rose-400 flex items-center justify-center text-[11px] font-mono font-bold text-slate-950">
+              <div className="w-full md:w-3/4 bg-[#04070c] rounded-full h-9 p-1 border border-[#3b7a75]/20 relative flex justify-end">
+                <div className="w-3/5 h-full rounded-full bg-gradient-to-r from-pink-500 to-rose-400 flex items-center justify-center text-xs font-mono font-bold text-slate-950">
                   2023 - Present[cite: 1]
                 </div>
               </div>
@@ -411,24 +472,24 @@ export default function Home() {
         </section>
 
         {/* --- SECTION 4: PROJECTS --- */}
-        <section id="projects" className="w-full flex flex-col gap-10">
+        <section id="projects" className="w-full flex flex-col gap-12 scroll-mt-28">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-[#3b7a75]/20 pb-6">
             <div>
               <div className="flex items-center gap-2 text-[#70a9a1] mb-2">
-                <Sparkles size={16} />
+                <Sparkles size={18} />
                 <span className="text-xs uppercase tracking-widest font-mono">Curated Portfolio</span>
               </div>
-              <h2 className="font-cinzel text-3xl text-[#e2f1f8] tracking-wider">Featured Projects</h2>
+              <h2 className="font-cinzel text-3xl sm:text-4xl text-[#e2f1f8] tracking-wider">Featured Projects</h2>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2.5">
               {(['all', 'web', 'game', 'ai'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 rounded-xl text-xs tracking-wider uppercase transition-all ${
+                  className={`px-5 py-2.5 rounded-xl text-xs tracking-wider uppercase transition-all cursor-pointer ${
                     activeTab === tab
-                      ? 'bg-[#3b7a75] text-[#e2f1f8] border border-[#70a9a1] shadow-[0_0_15px_rgba(112,169,161,0.4)]'
+                      ? 'bg-[#3b7a75] text-[#e2f1f8] border border-[#70a9a1] shadow-[0_0_20px_rgba(112,169,161,0.4)]'
                       : 'twilight-card text-[#8ba2b5] hover:text-[#e2f1f8]'
                   }`}
                 >
@@ -442,27 +503,27 @@ export default function Home() {
             {filteredProjects.map((project) => (
               <div 
                 key={project.id} 
-                className="twilight-card vampire-sparkle rounded-2xl p-6 flex flex-col justify-between group cursor-pointer transition-all hover:-translate-y-1"
+                className="twilight-card rounded-2xl p-7 flex flex-col justify-between group cursor-pointer hover:-translate-y-1.5 transition-all"
                 onClick={() => setSelectedProject(project)}
               >
                 <div>
-                  <div className="flex justify-between items-start mb-3">
-                    <span className="text-[10px] font-mono text-[#70a9a1] uppercase tracking-wider">{project.tagline}</span>
-                    <ExternalLink size={16} className="text-[#8ba2b5] group-hover:text-[#e2f1f8] transition-colors" />
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-[11px] font-mono text-[#70a9a1] uppercase tracking-wider">{project.tagline}</span>
+                    <ExternalLink size={18} className="text-[#8ba2b5] group-hover:text-[#e2f1f8] transition-colors" />
                   </div>
                   
-                  <h3 className="font-cinzel text-lg text-[#e2f1f8] group-hover:text-[#8bbcd4] transition-colors mb-3">
+                  <h3 className="font-cinzel text-xl text-[#e2f1f8] group-hover:text-[#8bbcd4] transition-colors mb-4">
                     {project.title}
                   </h3>
 
-                  <p className="text-xs text-[#8ba2b5] leading-relaxed mb-6 font-light">
+                  <p className="text-xs sm:text-sm text-[#8ba2b5] leading-relaxed mb-6 font-light">
                     {project.summary}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 pt-4 border-t border-[#3b7a75]/20">
+                <div className="flex flex-wrap gap-2 pt-4 border-t border-[#3b7a75]/20">
                   {project.techStack.map((tech, idx) => (
-                    <span key={idx} className="text-[10px] px-2.5 py-0.5 rounded-md bg-[#04070c]/80 text-[#8bbcd4] border border-[#3b7a75]/30 font-mono">
+                    <span key={idx} className="text-[10px] px-3 py-1 rounded-md bg-[#04070c]/80 text-[#8bbcd4] border border-[#3b7a75]/30 font-mono">
                       {tech}
                     </span>
                   ))}
@@ -473,16 +534,16 @@ export default function Home() {
         </section>
 
         {/* --- SECTION 5: WORK EXPERIENCE & CERTIFICATIONS --- */}
-        <section id="experience" className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="twilight-card rounded-2xl p-8 border border-[#3b7a75]/30 flex flex-col justify-between">
+        <section id="experience" className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 scroll-mt-28">
+          <div className="twilight-card rounded-3xl p-10 border border-[#3b7a75]/30 flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-3 mb-4 text-[#70a9a1]">
-                <Briefcase size={22} />
-                <h3 className="font-cinzel text-base text-[#e2f1f8]">Professional Experience</h3>
+              <div className="flex items-center gap-3 mb-6 text-[#70a9a1]">
+                <Briefcase size={24} />
+                <h3 className="font-cinzel text-lg text-[#e2f1f8]">Professional Experience</h3>
               </div>
-              <h4 className="text-sm font-semibold text-[#e2f1f8]">Information System Intern</h4>
-              <p className="text-xs text-[#8ba2b5] mb-4">ROHM Electronics (Malaysia) Sdn. Bhd.[cite: 1]</p>
-              <ul className="text-xs text-[#8ba2b5] space-y-2 font-light">
+              <h4 className="text-base font-semibold text-[#e2f1f8]">Information System Intern</h4>
+              <p className="text-xs text-[#8ba2b5] mb-6">ROHM Electronics (Malaysia) Sdn. Bhd.[cite: 1]</p>
+              <ul className="text-xs sm:text-sm text-[#8ba2b5] space-y-3 font-light">
                 <li>• Developed internal applications using PHP and Microsoft SQL Server[cite: 1].</li>
                 <li>• Maintained Active Directory domain workstations and domain rules[cite: 1].</li>
                 <li>• Built REST APIs and executed payload validation with Postman[cite: 1].</li>
@@ -490,18 +551,18 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="twilight-card rounded-2xl p-8 border border-[#3b7a75]/30 flex flex-col justify-between">
+          <div className="twilight-card rounded-3xl p-10 border border-[#3b7a75]/30 flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-3 mb-4 text-[#70a9a1]">
-                <Award size={22} />
-                <h3 className="font-cinzel text-base text-[#e2f1f8]">Certifications</h3>
+              <div className="flex items-center gap-3 mb-6 text-[#70a9a1]">
+                <Award size={24} />
+                <h3 className="font-cinzel text-lg text-[#e2f1f8]">Certifications</h3>
               </div>
-              <ul className="text-xs text-[#8ba2b5] space-y-3 font-light">
-                <li className="flex justify-between border-b border-[#3b7a75]/20 pb-2">
+              <ul className="text-xs sm:text-sm text-[#8ba2b5] space-y-4 font-light">
+                <li className="flex justify-between border-b border-[#3b7a75]/20 pb-3">
                   <span>AWS Cloud Practitioner Essentials[cite: 1]</span>
                   <span className="font-mono text-[#70a9a1]">2025[cite: 1]</span>
                 </li>
-                <li className="flex justify-between border-b border-[#3b7a75]/20 pb-2">
+                <li className="flex justify-between border-b border-[#3b7a75]/20 pb-3">
                   <span>AWS Cloud Migration Factory[cite: 1]</span>
                   <span className="font-mono text-[#70a9a1]">2025[cite: 1]</span>
                 </li>
@@ -515,16 +576,16 @@ export default function Home() {
         </section>
 
         {/* --- FOOTER --- */}
-        <footer className="w-full pt-16 border-t border-[#3b7a75]/20 flex flex-col items-center justify-center text-center gap-6 text-xs text-[#8ba2b5]">
-          <p className="font-cinzel tracking-widest text-[#e2f1f8]">
+        <footer className="w-full pt-20 border-t border-[#3b7a75]/20 flex flex-col items-center justify-center text-center gap-6 text-xs text-[#8ba2b5]">
+          <p className="font-cinzel tracking-widest text-[#e2f1f8] text-sm">
             &ldquo;And so the lion fell in love with the lamb...&rdquo;
           </p>
           <p>© {new Date().getFullYear()} Siti Nur Maisarah • Pacific Northwest Aesthetic[cite: 1].</p>
           
           <div className="flex gap-6">
-            <a href="https://github.com/maisiyy" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8] transition-colors"><FolderGit2 size={20} /></a>
-            <a href="https://linkedin.com/in/siti-nur-maisarah-ba225123a" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8] transition-colors"><Globe size={20} /></a>
-            <a href="mailto:maisarahmzn@gmail.com" className="hover:text-[#e2f1f8] transition-colors"><Mail size={20} /></a>
+            <a href="https://github.com/maisiyy" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8] transition-colors"><FolderGit2 size={22} /></a>
+            <a href="https://linkedin.com/in/siti-nur-maisarah-ba225123a" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8] transition-colors"><Globe size={22} /></a>
+            <a href="mailto:maisarahmzn@gmail.com" className="hover:text-[#e2f1f8] transition-colors"><Mail size={22} /></a>
           </div>
         </footer>
 
@@ -532,24 +593,24 @@ export default function Home() {
 
       {/* --- POPUP MODAL --- */}
       {selectedProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#04070c]/85 backdrop-blur-lg">
-          <div className="twilight-card max-w-lg w-full rounded-2xl p-8 relative border border-[#70a9a1]/50 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#03060a]/85 backdrop-blur-lg">
+          <div className="twilight-card max-w-xl w-full rounded-3xl p-8 relative border border-[#70a9a1]/50 shadow-2xl">
             <button 
               onClick={() => setSelectedProject(null)}
-              className="absolute top-5 right-5 text-[#8ba2b5] hover:text-[#e2f1f8]"
+              className="absolute top-6 right-6 text-[#8ba2b5] hover:text-[#e2f1f8] cursor-pointer"
             >
-              <X size={22} />
+              <X size={24} />
             </button>
 
-            <span className="text-[10px] font-mono text-[#70a9a1] uppercase tracking-widest mb-1 block">
+            <span className="text-[11px] font-mono text-[#70a9a1] uppercase tracking-widest mb-2 block">
               {selectedProject.tagline}
             </span>
             
             <h3 className="font-cinzel text-2xl text-[#e2f1f8] mb-4">{selectedProject.title}</h3>
             
-            <div className="space-y-2.5 mb-6 text-xs text-[#8ba2b5] leading-relaxed">
+            <div className="space-y-3 mb-8 text-xs sm:text-sm text-[#8ba2b5] leading-relaxed">
               {selectedProject.highlights.map((point, idx) => (
-                <p key={idx} className="flex items-start gap-2">
+                <p key={idx} className="flex items-start gap-2.5">
                   <span className="text-[#70a9a1]">•</span> {point}
                 </p>
               ))}
@@ -557,7 +618,7 @@ export default function Home() {
 
             <div className="flex flex-wrap gap-2 mb-8">
               {selectedProject.techStack.map((tech, idx) => (
-                <span key={idx} className="text-[10px] px-3 py-1 rounded-md bg-[#04070c] text-[#8bbcd4] border border-[#3b7a75]/30 font-mono">
+                <span key={idx} className="text-[11px] px-3 py-1 rounded-md bg-[#04070c] text-[#8bbcd4] border border-[#3b7a75]/30 font-mono">
                   {tech}
                 </span>
               ))}
@@ -567,9 +628,9 @@ export default function Home() {
               href={selectedProject.link}
               target="_blank"
               rel="noreferrer"
-              className="w-full py-3 rounded-xl bg-[#10202e] text-[#e2f1f8] border border-[#3b7a75]/40 flex items-center justify-center gap-2 text-xs font-medium hover:border-[#8bbcd4] transition-all"
+              className="w-full py-4 rounded-xl bg-[#0c1a26] text-[#e2f1f8] border border-[#3b7a75]/50 flex items-center justify-center gap-2.5 text-xs font-medium hover:border-[#8bbcd4] transition-all"
             >
-              <FolderGit2 size={16} />
+              <FolderGit2 size={18} />
               Open Source Repository
             </a>
           </div>
