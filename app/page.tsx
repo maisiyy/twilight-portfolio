@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import FogOverlay from '@/components/FogOverlay';
+import Image from 'next/image';
 import { 
   Sparkles, 
   FolderGit2, 
@@ -172,43 +173,57 @@ export default function Home() {
 
       <main className="relative z-10 max-w-5xl mx-auto px-6 pt-16 pb-32 flex flex-col gap-28">
         
-        {/* --- HERO SECTION --- */}
-        <section id="about" className="flex flex-col items-center text-center">
-          
-          <p className="font-cinzel text-xs text-[#70a9a1] tracking-[0.3em] uppercase mb-4">
-            &ldquo;About three things I was absolutely positive...&rdquo;
-          </p>
+       {/* --- HERO SECTION WITH ANIMATED PROFILE PHOTO --- */}
+<section id="about" className="flex flex-col items-center text-center">
+  
+  {/* Profile Image Container with Glowing Aura */}
+  <div className="profile-aura-frame mb-8 floating-card">
+    <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden border-2 border-[#04070c]">
+      <Image
+        src="/profile.jpg"
+        alt="Siti Nur Maisarah"
+        fill
+        sizes="(max-width: 640px) 144px, 176px"
+        className="object-cover hover:scale-105 transition-transform duration-500 grayscale hover:grayscale-0"
+        priority
+      />
+    </div>
+  </div>
 
-          <h1 className="font-cinzel text-4xl sm:text-7xl tracking-widest text-[#e2f1f8] uppercase drop-shadow-[0_0_35px_rgba(112,169,161,0.4)] mb-6">
-            Siti Nur Maisarah
-          </h1>
+  <p className="font-cinzel text-xs text-[#70a9a1] tracking-[0.3em] uppercase mb-3 animate-pulse">
+    &ldquo;About three things I was absolutely positive...&rdquo;
+  </p>
 
-          <p className="text-base sm:text-xl text-[#8bbcd4] max-w-2xl font-light leading-relaxed">
-            Full-Stack Developer • Game Engineer • AI/ML Integrator
-          </p>
+  <h1 className="font-cinzel text-4xl sm:text-7xl tracking-widest uppercase drop-shadow-[0_0_35px_rgba(112,169,161,0.4)] mb-4 shimmer-text">
+    Siti Nur Maisarah
+  </h1>
 
-          <p className="mt-4 text-xs sm:text-sm text-[#8ba2b5] max-w-xl leading-relaxed font-light">
-            Computer Science Graduate from Universiti Malaysia Pahang Al-Sultan Abdullah (CGPA 3.52)[cite: 1]. Crafting production web apps, computer vision games, and cloud solutions under evergreen misty skies[cite: 1].
-          </p>
+  <p className="text-base sm:text-xl text-[#8bbcd4] max-w-2xl font-light leading-relaxed">
+    Full-Stack Developer • Game Engineer • AI/ML Integrator
+  </p>
 
-          {/* Action Callouts */}
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <a
-              href="#projects"
-              className="px-8 py-3.5 rounded-xl bg-[#10202e] text-[#e2f1f8] border border-[#3b7a75]/50 flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium hover:border-[#8bbcd4] hover:shadow-[0_0_20px_rgba(112,169,161,0.3)] transition-all"
-            >
-              <Terminal size={16} className="text-[#70a9a1]" />
-              View Works
-            </a>
-            <a
-              href="mailto:maisarahmzn@gmail.com"
-              className="px-8 py-3.5 rounded-xl twilight-card text-[#8ba2b5] hover:text-[#e2f1f8] flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium transition-all"
-            >
-              <Mail size={16} />
-              Initiate Contact
-            </a>
-          </div>
-        </section>
+  <p className="mt-4 text-xs sm:text-sm text-[#8ba2b5] max-w-xl leading-relaxed font-light">
+    Computer Science Graduate from Universiti Malaysia Pahang Al-Sultan Abdullah (CGPA 3.52)[cite: 1]. Crafting production web apps, computer vision games, and cloud solutions under evergreen misty skies[cite: 1].
+  </p>
+
+  {/* Action Buttons */}
+  <div className="mt-8 flex flex-wrap justify-center gap-4">
+    <a
+      href="#projects"
+      className="px-8 py-3.5 rounded-xl bg-[#10202e] text-[#e2f1f8] border border-[#3b7a75]/50 flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium hover:border-[#8bbcd4] hover:shadow-[0_0_20px_rgba(112,169,161,0.4)] transition-all"
+    >
+      <Terminal size={16} className="text-[#70a9a1]" />
+      View Works
+    </a>
+    <a
+      href="mailto:maisarahmzn@gmail.com"
+      className="px-8 py-3.5 rounded-xl twilight-card text-[#8ba2b5] hover:text-[#e2f1f8] flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium transition-all"
+    >
+      <Mail size={16} />
+      Initiate Contact
+    </a>
+  </div>
+</section>
 
         {/* --- EXPERIENCE BANNER --- */}
         <section id="experience" className="twilight-card rounded-2xl p-8 border border-[#3b7a75]/30">
