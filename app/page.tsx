@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import FogOverlay from '@/components/FogOverlay';
 import { 
   Sparkles, 
@@ -12,210 +12,283 @@ import {
   Briefcase, 
   Award, 
   X, 
-  FileDown 
+  Volume2, 
+  VolumeX, 
+  Terminal, 
+  Cpu, 
+  Compass,
+  GraduationCap
 } from 'lucide-react';
 
 interface Project {
   id: string;
   title: string;
   category: 'web' | 'game' | 'ai';
-  shortDesc: string;
-  fullDesc: string[];
-  tags: string[];
+  tagline: string;
+  summary: string;
+  highlights: string[];
+  techStack: string[];
   link: string;
 }
 
 export default function Home() {
-  const [activeFilter, setActiveFilter] = useState<'all' | 'web' | 'game' | 'ai'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'web' | 'game' | 'ai'>('all');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const toggleAudio = () => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2516/2516-preview.mp3'); // Soft forest rain ambience
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.3;
+    }
+
+    if (isPlayingAudio) {
+      audioRef.current.pause();
+      setIsPlayingAudio(false);
+    } else {
+      audioRef.current.play();
+      setIsPlayingAudio(true);
+    }
+  };
 
   const projects: Project[] = [
     {
       id: 'my-hygiene',
-      title: 'MY-HYGIENE Game',
+      title: 'MY-HYGIENE Computer Vision Game',
       category: 'game',
-      shortDesc: 'Award-winning 2D educational game transforming hygiene learning via computer vision[cite: 1].',
-      fullDesc: [
-        'Built with Unity 2D & C# for primary school interactive learning[cite: 1].',
-        'Integrated MediaPipe computer vision for real-time physical gesture detection (hand washing, teeth brushing)[cite: 1].',
-        'Won Best Booth at FYPro-Com Exhibition (SEM 1 2025/2026)[cite: 1].'
+      tagline: 'Award-Winning FYP Educational Architecture',
+      summary: 'Transforms children hygiene learning using MediaPipe computer vision gesture tracking[cite: 1].',
+      highlights: [
+        'Built with Unity 2D & C# for primary school health education[cite: 1].',
+        'Real-time physical gesture detection (hand washing & teeth brushing smiles) using MediaPipe[cite: 1].',
+        'Awarded Best Booth at FYPro-Com Exhibition (SEM 1 2025/2026)[cite: 1].'
       ],
-      tags: ['Unity 2D', 'C#', 'MediaPipe', 'Computer Vision'],
+      techStack: ['Unity 2D', 'C#', 'MediaPipe', 'Computer Vision'],
       link: 'https://github.com/maisiyy'
     },
     {
       id: 'rema-lti',
-      title: 'REMA LTI Display Board',
+      title: 'REMA LTI Safety Display & Portal',
       category: 'web',
-      shortDesc: 'Real-time safety display & management system built for corporate office signage[cite: 1].',
-      fullDesc: [
-        'Frontend built using Vite, JavaScript, and CSS for dynamic days-without-accident display[cite: 1].',
-        'PHP management dashboard integrated into internal portal with role validation[cite: 1].',
-        'REST API endpoints using SQL Server, Aura SQL Query Builder, and Rakit Validator[cite: 1].'
+      tagline: 'Enterprise Safety Signage & REST Infrastructure',
+      summary: 'Real-time safety display board and incident management system for corporate office signage[cite: 1].',
+      highlights: [
+        'Real-time display dashboard built with Vite, JavaScript, and CSS[cite: 1].',
+        'PHP management portal enabling safety officers to log incidents and manage display slides[cite: 1].',
+        'REST API endpoints powered by SQL Server, Aura SQL Query Builder, and Rakit Validator[cite: 1].'
       ],
-      tags: ['PHP', 'SQL Server', 'Vite', 'JavaScript', 'REST API'],
+      techStack: ['PHP', 'SQL Server', 'Vite', 'JavaScript', 'REST API'],
       link: 'https://github.com/maisiyy'
     },
     {
       id: 'pc-inventory',
-      title: 'PC Compliance System',
+      title: 'PC Compliance & Inventory System',
       category: 'web',
-      shortDesc: 'Full-stack workstation OS tracking application with role-based access control[cite: 1].',
-      fullDesc: [
-        'Built with Laravel, MySQL, and Tailwind CSS to track Windows version compliance[cite: 1].',
-        'Features complete CRUD workflows, CSV import/export, and dark mode theme[cite: 1].'
+      tagline: 'Enterprise Workstation Security Monitor',
+      summary: 'Full-stack workstation OS compliance app with role-based controls and CSV workflows[cite: 1].',
+      highlights: [
+        'Tracks Windows OS compliance across corporate environments[cite: 1].',
+        'Built using Laravel, MySQL, and Tailwind CSS[cite: 1].',
+        'Includes role-based access control (RBAC) and CSV export/import modules[cite: 1].'
       ],
-      tags: ['Laravel', 'MySQL', 'Tailwind CSS', 'PHP'],
+      techStack: ['Laravel', 'MySQL', 'Tailwind CSS', 'PHP'],
       link: 'https://github.com/maisiyy'
     },
     {
       id: 'energy-ml',
-      title: 'Household Energy ML',
+      title: 'Household Energy Load Predictor',
       category: 'ai',
-      shortDesc: 'End-to-end Machine Learning forecasting dashboard using Random Forest Regression[cite: 1].',
-      fullDesc: [
-        'Processed UCI Appliances Energy Prediction dataset containing sensor and weather metrics[cite: 1].',
-        'Deployed interactive prediction dashboard on Streamlit Cloud[cite: 1].',
-        'Automated deployment pipeline configured with GitHub Actions CI/CD[cite: 1].'
+      tagline: 'End-to-End Machine Learning Pipeline',
+      summary: 'Predictive smart city resource solution utilizing Random Forest Regression and automated CI/CD[cite: 1].',
+      highlights: [
+        'Processed UCI Appliances Energy dataset with weather and indoor sensor data[cite: 1].',
+        'Deployed real-time prediction dashboard on Streamlit Cloud[cite: 1].',
+        'Automated testing and deployment using GitHub Actions CI/CD[cite: 1].'
       ],
-      tags: ['Python', 'Streamlit', 'Random Forest', 'CI/CD'],
+      techStack: ['Python', 'Streamlit', 'Random Forest', 'GitHub Actions'],
       link: 'https://github.com/maisiyy'
     },
     {
       id: 'edu-lms',
-      title: 'Edu Fairuzullah LMS',
+      title: 'Edu Fairuzullah Cloud LMS',
       category: 'web',
-      shortDesc: 'Cloud-native learning management system prototype deployed on AWS[cite: 1].',
-      fullDesc: [
-        'Python Flask application architecture featuring secure role-based access control[cite: 1].',
-        'Deployed on AWS Elastic Beanstalk infrastructure[cite: 1].'
+      tagline: 'AWS Elastic Beanstalk Prototype',
+      summary: 'Cloud-native learning management platform featuring secure role-based permissions[cite: 1].',
+      highlights: [
+        'Developed with Python Flask backend[cite: 1].',
+        'Deployed onto AWS Elastic Beanstalk cloud architecture[cite: 1].'
       ],
-      tags: ['Python', 'Flask', 'AWS Elastic Beanstalk'],
+      techStack: ['Python', 'Flask', 'AWS Elastic Beanstalk'],
       link: 'https://github.com/maisiyy'
     },
     {
       id: 'aegis',
       title: 'AEGIS: Escape Protocol',
       category: 'game',
-      shortDesc: '3D sci-fi game featuring custom C# combat mechanics and AI enemies[cite: 1].',
-      fullDesc: [
-        'Designed 3 interactive sci-fi maps with pathfinding AI enemy behaviors[cite: 1].',
-        'Engineered energy shields and combat mechanics in Unity 3D & C#[cite: 1].'
+      tagline: '3D Tactical Survival Experience',
+      summary: 'Sci-fi 3D game featuring pathfinding AI enemies and custom shield mechanics[cite: 1].',
+      highlights: [
+        'Engineered in Unity 3D with C# combat scripts[cite: 1].',
+        'Includes 3 interactive maps and dynamic AI enemy pathing[cite: 1].'
       ],
-      tags: ['Unity 3D', 'C#', 'Game AI'],
+      techStack: ['Unity 3D', 'C#', 'Game AI'],
       link: 'https://github.com/maisiyy'
     }
   ];
 
-  const filteredProjects = activeFilter === 'all' 
+  const filteredProjects = activeTab === 'all' 
     ? projects 
-    : projects.filter(p => p.category === activeFilter);
+    : projects.filter(p => p.category === activeTab);
 
   return (
-    <div className="relative min-h-screen starry-bg selection:bg-[#3b7a75] selection:text-white">
-      {/* Animated Fog */}
+    <div className="relative min-h-screen starry-bg selection:bg-[#3b7a75] selection:text-[#e2f1f8]">
+      {/* Dynamic Animated Fog */}
       <FogOverlay />
 
-      {/* Atmospheric Vignette */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[#070a10]/50 via-transparent to-[#070a10] pointer-events-none z-[2]" />
+      {/* Ambient Audio Floating Toggle */}
+      <button
+        onClick={toggleAudio}
+        className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full twilight-card text-[#70a9a1] hover:text-[#e2f1f8] hover:border-[#70a9a1] transition-all flex items-center gap-2 text-xs shadow-2xl"
+        title="Toggle Pacific Northwest Forest Ambience"
+      >
+        {isPlayingAudio ? <Volume2 size={18} className="animate-pulse" /> : <VolumeX size={18} />}
+        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Mist Ambience: ON' : 'Atmosphere'}</span>
+      </button>
 
-      <main className="relative z-10 max-w-4xl mx-auto px-6 py-20 flex flex-col gap-24">
+      {/* Top Navigation */}
+      <nav className="relative z-20 max-w-5xl mx-auto px-6 py-8 flex items-center justify-between border-b border-[#3b7a75]/20">
+        <div className="flex items-center gap-2">
+          <Compass size={20} className="text-[#70a9a1]" />
+          <span className="font-cinzel text-sm tracking-widest text-[#e2f1f8] uppercase">Forks, WA • 47.9504° N</span>
+        </div>
+        <div className="flex gap-4 text-xs text-[#8ba2b5]">
+          <a href="#about" className="hover:text-[#e2f1f8] transition-colors">About</a>
+          <a href="#projects" className="hover:text-[#e2f1f8] transition-colors">Projects</a>
+          <a href="#experience" className="hover:text-[#e2f1f8] transition-colors">Experience</a>
+        </div>
+      </nav>
+
+      <main className="relative z-10 max-w-5xl mx-auto px-6 pt-16 pb-32 flex flex-col gap-28">
         
-        {/* --- Hero Section --- */}
-        <section className="flex flex-col items-center text-center pt-8">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full twilight-glass text-xs text-[#8bbcd4] tracking-widest uppercase mb-6">
-            <Sparkles size={14} className="animate-pulse text-[#70a9a1]" />
-            <span>Forks, Washington • Portfolio</span>
-          </div>
+        {/* --- HERO SECTION --- */}
+        <section id="about" className="flex flex-col items-center text-center">
+          
+          <p className="font-cinzel text-xs text-[#70a9a1] tracking-[0.3em] uppercase mb-4">
+            &ldquo;About three things I was absolutely positive...&rdquo;
+          </p>
 
-          <h1 className="font-cinzel text-4xl sm:text-6xl tracking-widest text-[#e2f1f8] uppercase drop-shadow-[0_0_25px_rgba(112,169,161,0.35)]">
+          <h1 className="font-cinzel text-4xl sm:text-7xl tracking-widest text-[#e2f1f8] uppercase drop-shadow-[0_0_35px_rgba(112,169,161,0.4)] mb-6">
             Siti Nur Maisarah
           </h1>
 
-          <p className="mt-4 text-sm sm:text-base text-[#8ba2b5] max-w-xl font-light leading-relaxed">
-            Computer Science Graduate (CGPA 3.52)[cite: 1]. Specializing in full-stack web development, database architectures, AI/ML integrations, and game systems[cite: 1].
+          <p className="text-base sm:text-xl text-[#8bbcd4] max-w-2xl font-light leading-relaxed">
+            Full-Stack Developer • Game Engineer • AI/ML Integrator
           </p>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <p className="mt-4 text-xs sm:text-sm text-[#8ba2b5] max-w-xl leading-relaxed font-light">
+            Computer Science Graduate from Universiti Malaysia Pahang Al-Sultan Abdullah (CGPA 3.52)[cite: 1]. Crafting production web apps, computer vision games, and cloud solutions under evergreen misty skies[cite: 1].
+          </p>
+
+          {/* Action Callouts */}
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
             <a
               href="#projects"
-              className="px-6 py-3 rounded-xl bg-[#132332] text-[#e2f1f8] border border-[#3b7a75]/40 flex items-center gap-2 text-sm font-medium hover:border-[#8bbcd4] transition-all"
+              className="px-8 py-3.5 rounded-xl bg-[#10202e] text-[#e2f1f8] border border-[#3b7a75]/50 flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium hover:border-[#8bbcd4] hover:shadow-[0_0_20px_rgba(112,169,161,0.3)] transition-all"
             >
-              <Code2 size={16} />
-              Explore Work
+              <Terminal size={16} className="text-[#70a9a1]" />
+              View Works
             </a>
             <a
               href="mailto:maisarahmzn@gmail.com"
-              className="px-6 py-3 rounded-xl twilight-glass text-[#8ba2b5] hover:text-[#e2f1f8] flex items-center gap-2 text-sm font-medium transition-all"
+              className="px-8 py-3.5 rounded-xl twilight-card text-[#8ba2b5] hover:text-[#e2f1f8] flex items-center gap-2.5 text-xs tracking-wider uppercase font-medium transition-all"
             >
               <Mail size={16} />
-              Contact
+              Initiate Contact
             </a>
           </div>
         </section>
 
-        {/* --- Work Experience Banner --- */}
-        <section className="twilight-glass rounded-2xl p-6 border border-[#3b7a75]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-[#070a10]/60 text-[#70a9a1] border border-[#3b7a75]/30">
-              <Briefcase size={22} />
+        {/* --- EXPERIENCE BANNER --- */}
+        <section id="experience" className="twilight-card rounded-2xl p-8 border border-[#3b7a75]/30">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-start gap-4">
+              <div className="p-3.5 rounded-xl bg-[#04070c] text-[#70a9a1] border border-[#3b7a75]/30">
+                <Briefcase size={24} />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono text-[#70a9a1] uppercase tracking-wider">Enterprise IT Internship</span>
+                <h3 className="font-cinzel text-lg text-[#e2f1f8]">Information System Intern</h3>
+                <p className="text-xs text-[#8ba2b5]">ROHM Electronics (Malaysia) Sdn. Bhd.[cite: 1]</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-cinzel text-sm text-[#e2f1f8] tracking-wide">Information System Intern</h3>
-              <p className="text-xs text-[#8ba2b5]">ROHM Electronics (Malaysia) Sdn. Bhd.[cite: 1]</p>
-            </div>
+
+            <ul className="text-xs text-[#8ba2b5] space-y-1.5 font-light">
+              <li>• Built production PHP & SQL Server internal applications[cite: 1].</li>
+              <li>• Provisioned Active Directory domain devices and network infrastructure[cite: 1].</li>
+              <li>• Configured REST APIs and validated JSON payloads via Postman[cite: 1].</li>
+            </ul>
           </div>
-          <span className="text-[10px] px-3 py-1 rounded-full bg-[#070a10]/80 text-[#70a9a1] border border-[#3b7a75]/30 font-mono">
-            PHP • MS SQL • Active Directory[cite: 1]
-          </span>
         </section>
 
-        {/* --- Interactive Projects Section --- */}
-        <section id="projects" className="flex flex-col gap-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h2 className="font-cinzel text-2xl text-[#e2f1f8] tracking-wider">Featured Work</h2>
-            
-            {/* Filter Buttons */}
+        {/* --- PROJECTS EXTRAVAGANZA SHOWCASE --- */}
+        <section id="projects" className="flex flex-col gap-10">
+          
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-[#3b7a75]/20 pb-6">
+            <div>
+              <div className="flex items-center gap-2 text-[#70a9a1] mb-2">
+                <Sparkles size={16} />
+                <span className="text-xs uppercase tracking-widest font-mono">Curated Portfolio</span>
+              </div>
+              <h2 className="font-cinzel text-3xl text-[#e2f1f8] tracking-wider">Project Archives</h2>
+            </div>
+
+            {/* Category Filter Tabs */}
             <div className="flex flex-wrap gap-2">
-              {(['all', 'web', 'game', 'ai'] as const).map((filter) => (
+              {(['all', 'web', 'game', 'ai'] as const).map((tab) => (
                 <button
-                  key={filter}
-                  onClick={() => setActiveFilter(filter)}
-                  className={`px-3 py-1 rounded-lg text-xs uppercase tracking-wider transition-all ${
-                    activeFilter === filter
-                      ? 'bg-[#3b7a75] text-[#e2f1f8] border border-[#70a9a1]'
-                      : 'twilight-glass text-[#8ba2b5] hover:text-[#e2f1f8]'
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-xl text-xs tracking-wider uppercase transition-all ${
+                    activeTab === tab
+                      ? 'bg-[#3b7a75] text-[#e2f1f8] border border-[#70a9a1] shadow-[0_0_15px_rgba(112,169,161,0.4)]'
+                      : 'twilight-card text-[#8ba2b5] hover:text-[#e2f1f8]'
                   }`}
                 >
-                  {filter === 'all' ? 'All' : filter === 'web' ? 'Web Dev' : filter === 'game' ? 'Game' : 'AI/ML'}
+                  {tab === 'all' ? 'All Systems' : tab === 'web' ? 'Full-Stack' : tab === 'game' ? 'Game Dev' : 'AI / ML'}
                 </button>
               ))}
             </div>
           </div>
 
+          {/* Cards Grid with Vampire Sparkle Hover Effect */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((project) => (
               <div 
                 key={project.id} 
-                className="twilight-glass rounded-2xl p-6 flex flex-col justify-between group hover:border-[#70a9a1]/50 transition-all cursor-pointer"
+                className="twilight-card vampire-sparkle rounded-2xl p-6 flex flex-col justify-between group cursor-pointer transition-all hover:-translate-y-1"
                 onClick={() => setSelectedProject(project)}
               >
                 <div>
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-cinzel text-base text-[#e2f1f8] group-hover:text-[#70a9a1] transition-colors">
-                      {project.title}
-                    </h3>
-                    <ExternalLink size={16} className="text-[#8ba2b5] group-hover:text-[#e2f1f8]" />
+                    <span className="text-[10px] font-mono text-[#70a9a1] uppercase tracking-wider">{project.tagline}</span>
+                    <ExternalLink size={16} className="text-[#8ba2b5] group-hover:text-[#e2f1f8] transition-colors" />
                   </div>
+                  
+                  <h3 className="font-cinzel text-lg text-[#e2f1f8] group-hover:text-[#8bbcd4] transition-colors mb-3">
+                    {project.title}
+                  </h3>
+
                   <p className="text-xs text-[#8ba2b5] leading-relaxed mb-6 font-light">
-                    {project.shortDesc}
+                    {project.summary}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5">
-                  {project.tags.slice(0, 3).map((tag, tIdx) => (
-                    <span key={tIdx} className="text-[10px] px-2 py-0.5 rounded bg-[#070a10]/60 text-[#70a9a1] border border-[#3b7a75]/20 font-mono">
-                      {tag}
+                <div className="flex flex-wrap gap-1.5 pt-4 border-t border-[#3b7a75]/20">
+                  {project.techStack.map((tech, idx) => (
+                    <span key={idx} className="text-[10px] px-2.5 py-0.5 rounded-md bg-[#04070c]/80 text-[#8bbcd4] border border-[#3b7a75]/30 font-mono">
+                      {tech}
                     </span>
                   ))}
                 </div>
@@ -224,79 +297,98 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Certifications & Skills Section --- */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="twilight-glass rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-4 text-[#70a9a1]">
-              <Award size={18} />
-              <h3 className="font-cinzel text-sm text-[#e2f1f8]">Certifications</h3>
+        {/* --- ACADEMICS & CERTIFICATIONS --- */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <div className="twilight-card rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-4 text-[#70a9a1]">
+                <GraduationCap size={20} />
+                <h3 className="font-cinzel text-sm text-[#e2f1f8]">Education</h3>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-xs text-[#e2f1f8] font-medium">Bachelor of Computer Science (Graphics & Multimedia)</h4>
+                  <p className="text-[11px] text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.52[cite: 1]</p>
+                </div>
+                <div>
+                  <h4 className="text-xs text-[#e2f1f8] font-medium">Diploma in Computer Science</h4>
+                  <p className="text-[11px] text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.51[cite: 1]</p>
+                </div>
+              </div>
             </div>
-            <ul className="text-xs text-[#8ba2b5] space-y-2.5">
-              <li className="flex justify-between">
-                <span>AWS Cloud Practitioner Essentials[cite: 1]</span>
-                <span className="font-mono text-[#70a9a1]">2025[cite: 1]</span>
-              </li>
-              <li className="flex justify-between">
-                <span>AWS Cloud Migration Factory[cite: 1]</span>
-                <span className="font-mono text-[#70a9a1]">2025[cite: 1]</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Cisco CCNA: Intro to Networks[cite: 1]</span>
-                <span className="font-mono text-[#70a9a1]">2023[cite: 1]</span>
-              </li>
-            </ul>
           </div>
 
-          <div className="twilight-glass rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-4 text-[#70a9a1]">
-              <Code2 size={18} />
-              <h3 className="font-cinzel text-sm text-[#e2f1f8]">Core Technologies</h3>
-            </div>
-            <div className="flex flex-wrap gap-2 text-xs text-[#8ba2b5]">
-              {['PHP', 'Laravel', 'React.js', 'Python', 'C#', 'Unity', 'MySQL', 'MS SQL', 'AWS', 'Git'].map((tech, idx) => (
-                <span key={idx} className="px-2.5 py-1 rounded-md bg-[#070a10]/60 border border-[#3b7a75]/30">
-                  {tech}
-                </span>
-              ))}
+          <div className="twilight-card rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-4 text-[#70a9a1]">
+                <Award size={20} />
+                <h3 className="font-cinzel text-sm text-[#e2f1f8]">Certifications</h3>
+              </div>
+              <ul className="text-xs text-[#8ba2b5] space-y-2.5 font-light">
+                <li className="flex justify-between border-b border-[#3b7a75]/20 pb-2">
+                  <span>AWS Cloud Practitioner Essentials[cite: 1]</span>
+                  <span className="font-mono text-[#70a9a1]">2025[cite: 1]</span>
+                </li>
+                <li className="flex justify-between border-b border-[#3b7a75]/20 pb-2">
+                  <span>AWS Cloud Migration Factory[cite: 1]</span>
+                  <span className="font-mono text-[#70a9a1]">2025[cite: 1]</span>
+                </li>
+                <li className="flex justify-between">
+                  <span>Cisco CCNA: Intro to Networks[cite: 1]</span>
+                  <span className="font-mono text-[#70a9a1]">2023[cite: 1]</span>
+                </li>
+              </ul>
             </div>
           </div>
+
         </section>
 
-        {/* --- Footer --- */}
-        <footer className="pt-12 border-t border-[#3b7a75]/20 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-[#8ba2b5]">
-          <p>© {new Date().getFullYear()} Siti Nur Maisarah • Built with Next.js & Vercel[cite: 1].</p>
-          <div className="flex gap-5">
-            <a href="https://github.com/maisiyy" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8] transition-colors"><FolderGit2 size={18} /></a>
-            <a href="https://linkedin.com/in/siti-nur-maisarah-ba225123a" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8] transition-colors"><Globe size={18} /></a>
-            <a href="mailto:maisarahmzn@gmail.com" className="hover:text-[#e2f1f8] transition-colors"><Mail size={18} /></a>
+        {/* --- FOOTER & PINE FOREST SILHOUETTE --- */}
+        <footer className="pt-16 border-t border-[#3b7a75]/20 flex flex-col items-center justify-center text-center gap-6 text-xs text-[#8ba2b5]">
+          <p className="font-cinzel tracking-widest text-[#e2f1f8]">
+            &ldquo;And so the lion fell in love with the lamb...&rdquo;
+          </p>
+          <p>© {new Date().getFullYear()} Siti Nur Maisarah • Designed for the Pacific Northwest aesthetic[cite: 1].</p>
+          
+          <div className="flex gap-6">
+            <a href="https://github.com/maisiyy" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8] transition-colors"><FolderGit2 size={20} /></a>
+            <a href="https://linkedin.com/in/siti-nur-maisarah-ba225123a" target="_blank" rel="noreferrer" className="hover:text-[#e2f1f8] transition-colors"><Globe size={20} /></a>
+            <a href="mailto:maisarahmzn@gmail.com" className="hover:text-[#e2f1f8] transition-colors"><Mail size={20} /></a>
           </div>
         </footer>
 
       </main>
 
-      {/* --- Interactive Project Details Modal --- */}
+      {/* --- MODAL POPUP --- */}
       {selectedProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070a10]/80 backdrop-blur-md">
-          <div className="twilight-glass max-w-md w-full rounded-2xl p-6 relative border border-[#70a9a1]/40 shadow-2xl animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#04070c]/85 backdrop-blur-lg">
+          <div className="twilight-card max-w-lg w-full rounded-2xl p-8 relative border border-[#70a9a1]/50 shadow-2xl">
             <button 
               onClick={() => setSelectedProject(null)}
-              className="absolute top-4 right-4 text-[#8ba2b5] hover:text-[#e2f1f8]"
+              className="absolute top-5 right-5 text-[#8ba2b5] hover:text-[#e2f1f8]"
             >
-              <X size={20} />
+              <X size={22} />
             </button>
 
-            <h3 className="font-cinzel text-xl text-[#e2f1f8] mb-2">{selectedProject.title}</h3>
+            <span className="text-[10px] font-mono text-[#70a9a1] uppercase tracking-widest mb-1 block">
+              {selectedProject.tagline}
+            </span>
             
-            <div className="space-y-2 mb-6 text-xs text-[#8ba2b5]">
-              {selectedProject.fullDesc.map((point, idx) => (
-                <p key={idx}>• {point}</p>
+            <h3 className="font-cinzel text-2xl text-[#e2f1f8] mb-4">{selectedProject.title}</h3>
+            
+            <div className="space-y-2.5 mb-6 text-xs text-[#8ba2b5] leading-relaxed">
+              {selectedProject.highlights.map((point, idx) => (
+                <p key={idx} className="flex items-start gap-2">
+                  <span className="text-[#70a9a1]">•</span> {point}
+                </p>
               ))}
             </div>
 
-            <div className="flex flex-wrap gap-1.5 mb-6">
-              {selectedProject.tags.map((tag, tIdx) => (
-                <span key={tIdx} className="text-[10px] px-2 py-0.5 rounded bg-[#070a10]/80 text-[#70a9a1] border border-[#3b7a75]/30 font-mono">
-                  {tag}
+            <div className="flex flex-wrap gap-2 mb-8">
+              {selectedProject.techStack.map((tech, idx) => (
+                <span key={idx} className="text-[10px] px-3 py-1 rounded-md bg-[#04070c] text-[#8bbcd4] border border-[#3b7a75]/30 font-mono">
+                  {tech}
                 </span>
               ))}
             </div>
@@ -305,10 +397,10 @@ export default function Home() {
               href={selectedProject.link}
               target="_blank"
               rel="noreferrer"
-              className="w-full py-2.5 rounded-xl bg-[#132332] text-[#e2f1f8] border border-[#3b7a75]/40 flex items-center justify-center gap-2 text-xs font-medium hover:border-[#8bbcd4] transition-all"
+              className="w-full py-3 rounded-xl bg-[#10202e] text-[#e2f1f8] border border-[#3b7a75]/40 flex items-center justify-center gap-2 text-xs font-medium hover:border-[#8bbcd4] transition-all"
             >
               <FolderGit2 size={16} />
-              View Repository on GitHub
+              Open Source Repository
             </a>
           </div>
         </div>
