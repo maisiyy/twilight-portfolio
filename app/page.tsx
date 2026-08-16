@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import * as THREE from 'three';
 import { 
   Sparkles, 
   FolderGit2, 
@@ -20,7 +21,9 @@ import {
   Database,
   Brain,
   Moon,
-  Film
+  Film,
+  Music,
+  Heart
 } from 'lucide-react';
 
 interface Project {
@@ -39,66 +42,132 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [theme, setTheme] = useState<'twilight' | 'new-moon' | 'eclipse' | 'breaking-dawn'>('twilight');
+  const [currentScene, setCurrentScene] = useState<string>('cullen-house');
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Apply Theme Attribute
+  // Apply Theme
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Animated Twinkling Stars Background Canvas
+  // THREE.JS SCENE SWITCHER ON SCROLL
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
 
-    let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    // 1. Setup Three.js Renderer & Camera
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
 
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // 2. Scene 1: Cullen Meadow / Twinkling Stars (Hero)
+    const starGeometry = new THREE.BufferGeometry();
+    const starCount = 1200;
+    const starPositions = new Float32Array(starCount * 3);
+
+    for (let i = 0; i < starCount * 3; i++) {
+      starPositions[i] = (Math.random() - 0.5) * 20;
+    }
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+
+    const starMaterial = new THREE.PointsMaterial({
+      size: 0.03,
+      color: 0x8bbcd4,
+      transparent: true,
+      opacity: 0.8,
+    });
+    const starParticles = new THREE.Points(starGeometry, starMaterial);
+    scene.add(starParticles);
+
+    // 3. Scene 2: Misty Woods Fog (Skills)
+    const fogGeometry = new THREE.BufferGeometry();
+    const fogCount = 400;
+    const fogPositions = new Float32Array(fogCount * 3);
+
+    for (let i = 0; i < fogCount * 3; i++) {
+      fogPositions[i] = (Math.random() - 0.5) * 15;
+    }
+    fogGeometry.setAttribute('position', new THREE.BufferAttribute(fogPositions, 3));
+
+    const fogMaterial = new THREE.PointsMaterial({
+      size: 0.12,
+      color: 0x70a9a1,
+      transparent: true,
+      opacity: 0.35,
+    });
+    const fogParticles = new THREE.Points(fogGeometry, fogMaterial);
+    scene.add(fogParticles);
+
+    // 4. Scene 3: Prom Fairy Canopy Light Sparks (Prom Section)
+    const sparkGeometry = new THREE.BufferGeometry();
+    const sparkCount = 300;
+    const sparkPositions = new Float32Array(sparkCount * 3);
+
+    for (let i = 0; i < sparkCount * 3; i++) {
+      sparkPositions[i] = (Math.random() - 0.5) * 10;
+    }
+    sparkGeometry.setAttribute('position', new THREE.BufferAttribute(sparkPositions, 3));
+
+    const sparkMaterial = new THREE.PointsMaterial({
+      size: 0.08,
+      color: 0xfef08a,
+      transparent: true,
+      opacity: 0.9,
+    });
+    const sparkParticles = new THREE.Points(sparkGeometry, sparkMaterial);
+    scene.add(sparkParticles);
+
+    // Resize Handler
     const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener('resize', handleResize);
 
-    // Star Object Generation
-    const numStars = 180;
-    const stars = Array.from({ length: numStars }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      radius: Math.random() * 1.5 + 0.5,
-      alpha: Math.random(),
-      speed: Math.random() * 0.015 + 0.005,
-    }));
+    // Scroll Listener to Transition 3D Scenes
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const height = document.body.scrollHeight - window.innerHeight;
+      const progress = scrollY / height;
 
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
+      // Rotate and morph particle positions based on scroll depth
+      starParticles.rotation.y = progress * 2.5;
+      starParticles.rotation.x = progress * 1.2;
 
-      stars.forEach((star) => {
-        star.alpha += star.speed;
-        if (star.alpha > 1 || star.alpha < 0) {
-          star.speed = -star.speed;
-        }
+      fogParticles.position.y = Math.sin(progress * Math.PI) * 2;
+      sparkParticles.rotation.z = progress * 3;
 
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(226, 241, 248, ${Math.max(0, star.alpha)})`;
-        ctx.fill();
-      });
-
-      animationFrameId = requestAnimationFrame(render);
+      if (progress < 0.25) setCurrentScene('Cullen Meadow (Hero)');
+      else if (progress < 0.55) setCurrentScene('Forks High Lab (Tech Stack)');
+      else if (progress < 0.8) setCurrentScene('La Push Beach (Projects)');
+      else setCurrentScene('Prom Night Gazebo Canopy');
     };
+    window.addEventListener('scroll', handleScroll);
 
-    render();
+    // Render Loop
+    let animationFrameId: number;
+    const animate = () => {
+      starParticles.rotation.y += 0.0008;
+      fogParticles.rotation.x += 0.0005;
+      sparkParticles.rotation.y += 0.0012;
+
+      renderer.render(scene, camera);
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animate();
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
       cancelAnimationFrame(animationFrameId);
+      renderer.dispose();
     };
   }, []);
 
@@ -264,23 +333,23 @@ export default function Home() {
   return (
     <div className="relative min-h-screen selection:bg-[#3b7a75] selection:text-[#e2f1f8] w-full overflow-x-hidden">
       
-      {/* HTML5 Starry Sky Canvas */}
-      <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />
+      {/* Three.js Dynamic Scene Canvas */}
+      <canvas ref={canvasRef} id="three-canvas" />
 
-      {/* Orbiting Celestial Moon */}
+      {/* Orbiting Moon */}
       <div className="moving-moon" />
 
-      {/* Realistic Smoke / Mist Layers */}
-      <div className="smoke-wrapper">
-        <div className="smoke-layer smoke-1" />
-        <div className="smoke-layer smoke-2" />
-      </div>
-
-      {/* Pine Forest Silhouettes Framing Left and Right Edges */}
+      {/* Pine Forest Silhouettes */}
       <div className="pine-canopy-left" />
       <div className="pine-canopy-right" />
 
-      {/* Ambient Audio Floating Toggle */}
+      {/* Current Movie Scene Indicator (Scroll-Driven) */}
+      <div className="fixed top-24 left-8 z-40 hidden md:flex items-center gap-2 twilight-card px-4 py-2 rounded-full text-xs font-mono text-[#70a9a1]">
+        <Sparkles size={14} className="animate-spin" />
+        <span>Scene: {currentScene}</span>
+      </div>
+
+      {/* Ambient Audio Switch */}
       <button
         onClick={toggleAudio}
         className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full twilight-card text-[#70a9a1] hover:text-[#e2f1f8] transition-all flex items-center gap-2 text-xs shadow-2xl cursor-pointer"
@@ -305,10 +374,10 @@ export default function Home() {
             <a href="#skills" className="hover:text-[#e2f1f8] transition-colors">Skills</a>
             <a href="#timeline" className="hover:text-[#e2f1f8] transition-colors">Education</a>
             <a href="#projects" className="hover:text-[#e2f1f8] transition-colors">Projects</a>
-            <a href="#experience" className="hover:text-[#e2f1f8] transition-colors">Experience</a>
+            <a href="#prom-gazebos" className="hover:text-[#e2f1f8] transition-colors text-amber-300">Prom Gazebo</a>
           </nav>
 
-          {/* 4 Twilight Movie Themes Picker */}
+          {/* Twilight Theme Picker */}
           <div className="flex items-center gap-1.5 twilight-card px-3 py-1.5 rounded-full text-xs">
             <Film size={14} className="text-[#70a9a1] mr-1 hidden sm:block" />
             <button 
@@ -340,7 +409,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Container - EXPANDED WIDE SCREEN (MAX 1700PX) */}
+      {/* Main Wide Container */}
       <main className="relative z-10 w-full max-w-[1700px] mx-auto px-8 sm:px-20 py-16 flex flex-col gap-36">
         
         {/* --- SECTION 1: HERO HOME --- */}
@@ -533,44 +602,67 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- SECTION 5: WORK EXPERIENCE & CERTIFICATIONS --- */}
-        <section id="experience" className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 scroll-mt-28">
-          <div className="twilight-card rounded-3xl p-10 border border-[#3b7a75]/30 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-6 text-[#70a9a1]">
-                <Briefcase size={24} />
-                <h3 className="font-cinzel text-lg text-[#e2f1f8]">Professional Experience</h3>
-              </div>
-              <h4 className="text-base font-semibold text-[#e2f1f8]">Information System Intern</h4>
-              <p className="text-xs text-[#8ba2b5] mb-6">ROHM Electronics (Malaysia) Sdn. Bhd.[cite: 1]</p>
-              <ul className="text-xs sm:text-sm text-[#8ba2b5] space-y-3 font-light">
-                <li>• Developed internal applications using PHP and Microsoft SQL Server[cite: 1].</li>
-                <li>• Maintained Active Directory domain workstations and domain rules[cite: 1].</li>
-                <li>• Built REST APIs and executed payload validation with Postman[cite: 1].</li>
-              </ul>
+        {/* --- SECTION 5: TWILIGHT PROM NIGHT GAZEBO CANOPY --- */}
+        <section id="prom-gazebos" className="w-full flex flex-col items-center gap-10 scroll-mt-28">
+          <div className="text-center max-w-3xl">
+            <div className="flex items-center justify-center gap-2 text-amber-300 mb-3">
+              <Sparkles size={20} />
+              <span className="font-mono text-xs uppercase tracking-widest">A Thousand Years Scene</span>
+              <Sparkles size={20} />
             </div>
+            <h2 className="font-cinzel text-4xl sm:text-6xl text-[#fef3c7] tracking-wider mb-4 drop-shadow-[0_0_25px_rgba(253,224,71,0.3)]">
+              Prom Night Under Canopy Lights
+            </h2>
+            <p className="text-sm sm:text-base text-[#8ba2b5] font-light">
+              Step under the warm fairy light gazebo, enveloped in soft evergreen mist and glowing evening lanterns.
+            </p>
           </div>
 
-          <div className="twilight-card rounded-3xl p-10 border border-[#3b7a75]/30 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-6 text-[#70a9a1]">
-                <Award size={24} />
-                <h3 className="font-cinzel text-lg text-[#e2f1f8]">Certifications</h3>
+          {/* Interactive Prom Gazebo Structure */}
+          <div className="w-full relative rounded-3xl overflow-hidden border border-amber-500/30 gazebo-glow p-8 sm:p-16 flex flex-col items-center justify-center min-h-[500px]">
+            
+            {/* Fairy Lights Canopy Strings SVG */}
+            <div className="absolute inset-0 pointer-events-none opacity-80">
+              <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 500">
+                {/* Gazebo Roof Frame */}
+                <path d="M500,20 L100,200 M500,20 L900,200 M500,20 L500,220 M100,200 L900,200" stroke="rgba(251, 191, 36, 0.4)" strokeWidth="2" fill="none" />
+                {/* Fairy Light Strands */}
+                <path d="M500,20 Q300,120 100,200 M500,20 Q700,120 900,200 M500,20 Q350,140 250,200 M500,20 Q650,140 750,200" stroke="rgba(253, 224, 71, 0.8)" strokeWidth="1.5" strokeDasharray="6,6" fill="none" />
+              </svg>
+            </div>
+
+            {/* Glowing Fairy Light Bulbs */}
+            <div className="absolute top-12 flex justify-center gap-12 sm:gap-24 w-full max-w-4xl z-10">
+              <div className="fairy-light" />
+              <div className="fairy-light" style={{ animationDelay: '0.4s' }} />
+              <div className="fairy-light" style={{ animationDelay: '0.8s' }} />
+              <div className="fairy-light" style={{ animationDelay: '1.2s' }} />
+              <div className="fairy-light" style={{ animationDelay: '1.6s' }} />
+            </div>
+
+            {/* Gazebo Dance Floor Content */}
+            <div className="relative z-20 flex flex-col items-center text-center gap-6 max-w-2xl mt-12">
+              <div className="p-4 rounded-full bg-amber-500/10 border border-amber-400/40 text-amber-300">
+                <Music size={32} className="animate-bounce" />
               </div>
-              <ul className="text-xs sm:text-sm text-[#8ba2b5] space-y-4 font-light">
-                <li className="flex justify-between border-b border-[#3b7a75]/20 pb-3">
-                  <span>AWS Cloud Practitioner Essentials[cite: 1]</span>
-                  <span className="font-mono text-[#70a9a1]">2025[cite: 1]</span>
-                </li>
-                <li className="flex justify-between border-b border-[#3b7a75]/20 pb-3">
-                  <span>AWS Cloud Migration Factory[cite: 1]</span>
-                  <span className="font-mono text-[#70a9a1]">2025[cite: 1]</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>Cisco CCNA: Intro to Networks[cite: 1]</span>
-                  <span className="font-mono text-[#70a9a1]">2023[cite: 1]</span>
-                </li>
-              </ul>
+
+              <blockquote className="font-cinzel text-xl sm:text-2xl text-[#fef3c7] italic leading-relaxed">
+                &ldquo;I have died everyday waiting for you. Darling, don&apos;t be afraid, I have loved you for a thousand years...&rdquo;
+              </blockquote>
+
+              <p className="text-xs font-mono text-amber-200/80 uppercase tracking-widest">
+                Christina Perri — Twilight Saga
+              </p>
+
+              <div className="flex items-center gap-3 mt-4">
+                <a
+                  href="#home"
+                  className="px-8 py-3.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/50 text-xs uppercase font-mono tracking-widest hover:bg-amber-500/30 hover:border-amber-300 transition-all cursor-pointer flex items-center gap-2"
+                >
+                  <Heart size={14} className="fill-amber-300 text-amber-300" />
+                  Return To Tops
+                </a>
+              </div>
             </div>
           </div>
         </section>
