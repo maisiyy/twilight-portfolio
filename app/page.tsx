@@ -23,7 +23,9 @@ import {
   Moon,
   Film,
   Music,
-  Heart
+  Heart,
+  GraduationCap,
+  Server
 } from 'lucide-react';
 
 interface Project {
@@ -42,7 +44,6 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [theme, setTheme] = useState<'twilight' | 'new-moon' | 'eclipse' | 'breaking-dawn'>('twilight');
-  const [currentScene, setCurrentScene] = useState<string>('cullen-house');
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -52,78 +53,76 @@ export default function Home() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // THREE.JS SCENE SWITCHER ON SCROLL
+  // THREE.JS COLD BREEZE SMOKE SIMULATION ENGINE (No global particle dots)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // 1. Setup Three.js Renderer & Camera
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
+    camera.position.z = 8;
 
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // 2. Scene 1: Cullen Meadow / Twinkling Stars (Hero)
-    const starGeometry = new THREE.BufferGeometry();
-    const starCount = 1200;
-    const starPositions = new Float32Array(starCount * 3);
+    // Dynamic Smoke Particle Texture
+    const createSmokeTexture = () => {
+      const pCanvas = document.createElement('canvas');
+      pCanvas.width = 128;
+      pCanvas.height = 128;
+      const ctx = pCanvas.getContext('2d');
+      if (ctx) {
+        const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+        gradient.addColorStop(0, 'rgba(180, 210, 225, 0.22)');
+        gradient.addColorStop(0.4, 'rgba(112, 169, 161, 0.10)');
+        gradient.addColorStop(0.8, 'rgba(30, 50, 70, 0.03)');
+        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(64, 64, 64, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return new THREE.CanvasTexture(pCanvas);
+    };
 
-    for (let i = 0; i < starCount * 3; i++) {
-      starPositions[i] = (Math.random() - 0.5) * 20;
+    // Rolling Smoke Clouds System
+    const smokeCount = 90;
+    const smokeGeometry = new THREE.BufferGeometry();
+    const smokePositions = new Float32Array(smokeCount * 3);
+    const smokeData: { x: number; y: number; z: number; speedX: number; rotSpeed: number }[] = [];
+
+    for (let i = 0; i < smokeCount; i++) {
+      const x = (Math.random() - 0.5) * 28;
+      const y = (Math.random() - 0.5) * 14;
+      const z = (Math.random() - 0.5) * 8;
+      smokePositions[i * 3] = x;
+      smokePositions[i * 3 + 1] = y;
+      smokePositions[i * 3 + 2] = z;
+
+      smokeData.push({
+        x,
+        y,
+        z,
+        speedX: 0.003 + Math.random() * 0.005,
+        rotSpeed: (Math.random() - 0.5) * 0.001
+      });
     }
-    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
 
-    const starMaterial = new THREE.PointsMaterial({
-      size: 0.03,
-      color: 0x8bbcd4,
+    smokeGeometry.setAttribute('position', new THREE.BufferAttribute(smokePositions, 3));
+
+    const smokeMaterial = new THREE.PointsMaterial({
+      size: 4.5,
+      map: createSmokeTexture(),
       transparent: true,
-      opacity: 0.8,
+      depthWrite: false,
+      blending: THREE.NormalBlending
     });
-    const starParticles = new THREE.Points(starGeometry, starMaterial);
-    scene.add(starParticles);
 
-    // 3. Scene 2: Misty Woods Fog (Skills)
-    const fogGeometry = new THREE.BufferGeometry();
-    const fogCount = 400;
-    const fogPositions = new Float32Array(fogCount * 3);
+    const smokeParticles = new THREE.Points(smokeGeometry, smokeMaterial);
+    scene.add(smokeParticles);
 
-    for (let i = 0; i < fogCount * 3; i++) {
-      fogPositions[i] = (Math.random() - 0.5) * 15;
-    }
-    fogGeometry.setAttribute('position', new THREE.BufferAttribute(fogPositions, 3));
-
-    const fogMaterial = new THREE.PointsMaterial({
-      size: 0.12,
-      color: 0x70a9a1,
-      transparent: true,
-      opacity: 0.35,
-    });
-    const fogParticles = new THREE.Points(fogGeometry, fogMaterial);
-    scene.add(fogParticles);
-
-    // 4. Scene 3: Prom Fairy Canopy Light Sparks (Prom Section)
-    const sparkGeometry = new THREE.BufferGeometry();
-    const sparkCount = 300;
-    const sparkPositions = new Float32Array(sparkCount * 3);
-
-    for (let i = 0; i < sparkCount * 3; i++) {
-      sparkPositions[i] = (Math.random() - 0.5) * 10;
-    }
-    sparkGeometry.setAttribute('position', new THREE.BufferAttribute(sparkPositions, 3));
-
-    const sparkMaterial = new THREE.PointsMaterial({
-      size: 0.08,
-      color: 0xfef08a,
-      transparent: true,
-      opacity: 0.9,
-    });
-    const sparkParticles = new THREE.Points(sparkGeometry, sparkMaterial);
-    scene.add(sparkParticles);
-
-    // Resize Handler
+    // Resize Listener
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -131,32 +130,25 @@ export default function Home() {
     };
     window.addEventListener('resize', handleResize);
 
-    // Scroll Listener to Transition 3D Scenes
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const height = document.body.scrollHeight - window.innerHeight;
-      const progress = scrollY / height;
-
-      // Rotate and morph particle positions based on scroll depth
-      starParticles.rotation.y = progress * 2.5;
-      starParticles.rotation.x = progress * 1.2;
-
-      fogParticles.position.y = Math.sin(progress * Math.PI) * 2;
-      sparkParticles.rotation.z = progress * 3;
-
-      if (progress < 0.25) setCurrentScene('Cullen Meadow (Hero)');
-      else if (progress < 0.55) setCurrentScene('Forks High Lab (Tech Stack)');
-      else if (progress < 0.8) setCurrentScene('La Push Beach (Projects)');
-      else setCurrentScene('Prom Night Gazebo Canopy');
-    };
-    window.addEventListener('scroll', handleScroll);
-
-    // Render Loop
+    // Animation Loop (Rolling Cold Breeze Motion)
     let animationFrameId: number;
     const animate = () => {
-      starParticles.rotation.y += 0.0008;
-      fogParticles.rotation.x += 0.0005;
-      sparkParticles.rotation.y += 0.0012;
+      const posArray = smokeGeometry.attributes.position.array as Float32Array;
+
+      for (let i = 0; i < smokeCount; i++) {
+        smokeData[i].x += smokeData[i].speedX;
+
+        // Reset smoke cloud when it drifts past right boundary
+        if (smokeData[i].x > 15) {
+          smokeData[i].x = -15;
+        }
+
+        posArray[i * 3] = smokeData[i].x;
+        posArray[i * 3 + 1] = smokeData[i].y + Math.sin(smokeData[i].x * 0.5) * 0.2;
+      }
+
+      smokeGeometry.attributes.position.needsUpdate = true;
+      smokeParticles.rotation.z += 0.0003;
 
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
@@ -165,7 +157,6 @@ export default function Home() {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleScroll);
       cancelAnimationFrame(animationFrameId);
       renderer.dispose();
     };
@@ -333,7 +324,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen selection:bg-[#3b7a75] selection:text-[#e2f1f8] w-full overflow-x-hidden">
       
-      {/* Three.js Dynamic Scene Canvas */}
+      {/* Three.js Canvas with Fog/Smoke Breeze */}
       <canvas ref={canvasRef} id="three-canvas" />
 
       {/* Orbiting Moon */}
@@ -343,19 +334,13 @@ export default function Home() {
       <div className="pine-canopy-left" />
       <div className="pine-canopy-right" />
 
-      {/* Current Movie Scene Indicator (Scroll-Driven) */}
-      <div className="fixed top-24 left-8 z-40 hidden md:flex items-center gap-2 twilight-card px-4 py-2 rounded-full text-xs font-mono text-[#70a9a1]">
-        <Sparkles size={14} className="animate-spin" />
-        <span>Scene: {currentScene}</span>
-      </div>
-
       {/* Ambient Audio Switch */}
       <button
         onClick={toggleAudio}
         className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full twilight-card text-[#70a9a1] hover:text-[#e2f1f8] transition-all flex items-center gap-2 text-xs shadow-2xl cursor-pointer"
       >
         {isPlayingAudio ? <Volume2 size={18} className="animate-pulse" /> : <VolumeX size={18} />}
-        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Ambient Fog: ON' : 'Atmosphere'}</span>
+        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Cold Breeze Sound: ON' : 'Atmosphere'}</span>
       </button>
 
       {/* Sticky Top Navbar */}
@@ -372,9 +357,9 @@ export default function Home() {
           <nav className="hidden lg:flex items-center gap-10 text-sm text-[#8ba2b5]">
             <a href="#home" className="hover:text-[#e2f1f8] transition-colors">Home</a>
             <a href="#skills" className="hover:text-[#e2f1f8] transition-colors">Skills</a>
-            <a href="#timeline" className="hover:text-[#e2f1f8] transition-colors">Education</a>
+            <a href="#experience" className="hover:text-[#e2f1f8] transition-colors text-amber-200 font-medium">Experience</a>
             <a href="#projects" className="hover:text-[#e2f1f8] transition-colors">Projects</a>
-            <a href="#prom-gazebos" className="hover:text-[#e2f1f8] transition-colors text-amber-300">Prom Gazebo</a>
+            <a href="#prom-scene" className="hover:text-[#e2f1f8] transition-colors">Prom Glade</a>
           </nav>
 
           {/* Twilight Theme Picker */}
@@ -409,7 +394,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Wide Container */}
+      {/* Main Container */}
       <main className="relative z-10 w-full max-w-[1700px] mx-auto px-8 sm:px-20 py-16 flex flex-col gap-36">
         
         {/* --- SECTION 1: HERO HOME --- */}
@@ -498,44 +483,107 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- SECTION 3: EDUCATION TIMELINE --- */}
-        <section id="timeline" className="w-full twilight-card rounded-3xl p-10 sm:p-16 border border-[#3b7a75]/30 scroll-mt-28">
-          <h2 className="font-cinzel text-3xl sm:text-4xl text-[#e2f1f8] tracking-wider text-center mb-12">
-            Education Timeline
-          </h2>
+        {/* --- SECTION 3: GAZEBO & FAIRY LIGHTS EXCLUSIVE EXPERIENCE SECTION --- */}
+        <section id="experience" className="w-full scroll-mt-28 relative">
+          
+          {/* GAZEBO FRAME STRUCTURE (Exclusive to Experience Section) */}
+          <div className="relative w-full rounded-3xl border-2 border-amber-500/30 bg-gradient-to-b from-[#0c1622]/95 via-[#080d14]/90 to-[#04070c]/98 p-8 sm:p-16 shadow-[0_0_60px_rgba(251,191,36,0.12)] overflow-hidden">
+            
+            {/* Gazebo Roof Trim Beams */}
+            <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-r from-amber-700/40 via-amber-400/60 to-amber-700/40 border-b border-amber-300/40" />
 
-          <div className="space-y-10 max-w-6xl mx-auto">
-            <div className="grid grid-cols-6 text-center text-xs font-mono text-[#70a9a1] border-b border-[#3b7a75]/20 pb-3">
-              <span>2021</span>
-              <span>2022</span>
-              <span>2023</span>
-              <span>2024</span>
-              <span>2025</span>
-              <span>2026</span>
+            {/* Fairy String Lights Garland Graphic */}
+            <div className="w-full flex justify-between items-center px-4 -mt-4 mb-8">
+              {Array.from({ length: 18 }).map((_, i) => (
+                <div key={i} className="flex flex-col items-center">
+                  <div className="w-0.5 h-6 bg-amber-400/30" />
+                  <div className="w-3.5 h-3.5 rounded-full bg-amber-300 shadow-[0_0_12px_#fde047] animate-pulse" style={{ animationDelay: `${(i % 5) * 0.3}s` }} />
+                </div>
+              ))}
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div>
-                <h3 className="text-base font-semibold text-[#e2f1f8]">Diploma in Computer Science</h3>
-                <p className="text-xs text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.51[cite: 1]</p>
-              </div>
-              <div className="w-full md:w-3/4 bg-[#04070c] rounded-full h-9 p-1 border border-[#3b7a75]/20 relative">
-                <div className="w-2/5 h-full rounded-full bg-gradient-to-r from-sky-400 to-cyan-400 flex items-center justify-center text-xs font-mono font-bold text-slate-950">
-                  2021 - 2023[cite: 1]
-                </div>
-              </div>
+            {/* Gazebo Pillars Side Decorative Lines */}
+            <div className="absolute top-0 left-4 bottom-0 w-1 bg-gradient-to-b from-amber-500/30 via-amber-300/20 to-transparent hidden sm:block" />
+            <div className="absolute top-0 right-4 bottom-0 w-1 bg-gradient-to-b from-amber-500/30 via-amber-300/20 to-transparent hidden sm:block" />
+
+            <div className="text-center mb-14">
+              <span className="font-mono text-xs text-amber-300 uppercase tracking-widest block mb-2">
+                Under the Wooden Canopy
+              </span>
+              <h2 className="font-cinzel text-3xl sm:text-5xl text-[#fef3c7] tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.2)]">
+                Experience & Academic Journey
+              </h2>
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div>
-                <h3 className="text-base font-semibold text-[#e2f1f8]">Bachelor of Computer Science (Graphics & Multimedia)</h3>
-                <p className="text-xs text-[#8ba2b5]">Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.52[cite: 1]</p>
-              </div>
-              <div className="w-full md:w-3/4 bg-[#04070c] rounded-full h-9 p-1 border border-[#3b7a75]/20 relative flex justify-end">
-                <div className="w-3/5 h-full rounded-full bg-gradient-to-r from-pink-500 to-rose-400 flex items-center justify-center text-xs font-mono font-bold text-slate-950">
-                  2023 - Present[cite: 1]
+            {/* Experience Timeline Entries */}
+            <div className="space-y-12 max-w-5xl mx-auto relative z-10">
+              
+              {/* Entry 1: Working / Internship */}
+              <div className="p-8 rounded-2xl bg-[#04070c]/80 border border-amber-400/20 hover:border-amber-400/50 transition-all flex flex-col md:flex-row gap-6 justify-between items-start">
+                <div className="space-y-2 max-w-2xl">
+                  <div className="flex items-center gap-2 text-amber-300 text-xs font-mono">
+                    <Server size={16} />
+                    <span>MARCH 2026 – MAY 2026</span>[cite: 1]
+                  </div>
+                  <h3 className="font-cinzel text-xl text-[#e2f1f8] font-semibold">
+                    Information System Infrastructure Intern[cite: 1]
+                  </h3>
+                  <p className="text-xs text-amber-200/80 font-mono">
+                    ROHM Electronics Malaysia Sdn. Bhd.[cite: 1]
+                  </p>
+                  <p className="text-xs sm:text-sm text-[#8ba2b5] leading-relaxed pt-2">
+                    Managed server room audits, network administration via MikroTik Winbox, corporate Active Directory operations, antivirus system monitoring, and workstation compliance deployments[cite: 1].
+                  </p>
                 </div>
+                <span className="px-4 py-1.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/30 text-xs font-mono self-start">
+                  Professional Experience
+                </span>
               </div>
+
+              {/* Entry 2: Bachelor Degree */}
+              <div className="p-8 rounded-2xl bg-[#04070c]/80 border border-[#3b7a75]/30 hover:border-[#70a9a1] transition-all flex flex-col md:flex-row gap-6 justify-between items-start">
+                <div className="space-y-2 max-w-2xl">
+                  <div className="flex items-center gap-2 text-[#70a9a1] text-xs font-mono">
+                    <GraduationCap size={16} />
+                    <span>2023 – PRESENT (2026)</span>[cite: 1]
+                  </div>
+                  <h3 className="font-cinzel text-xl text-[#e2f1f8] font-semibold">
+                    Bachelor of Computer Science (Graphics & Multimedia)
+                  </h3>
+                  <p className="text-xs text-[#8bbcd4] font-mono">
+                    Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.52[cite: 1]
+                  </p>
+                  <p className="text-xs sm:text-sm text-[#8ba2b5] leading-relaxed pt-2">
+                    Specializing in computer vision algorithms, interactive 2D/3D game development, full-stack web architectures, and cloud deployments[cite: 1]. Completed award-winning Final Year Project MY-HYGIENE[cite: 1].
+                  </p>
+                </div>
+                <span className="px-4 py-1.5 rounded-full bg-[#70a9a1]/10 text-[#70a9a1] border border-[#70a9a1]/30 text-xs font-mono self-start">
+                  Degree Education
+                </span>
+              </div>
+
+              {/* Entry 3: Diploma */}
+              <div className="p-8 rounded-2xl bg-[#04070c]/80 border border-[#3b7a75]/30 hover:border-[#70a9a1] transition-all flex flex-col md:flex-row gap-6 justify-between items-start">
+                <div className="space-y-2 max-w-2xl">
+                  <div className="flex items-center gap-2 text-[#70a9a1] text-xs font-mono">
+                    <GraduationCap size={16} />
+                    <span>2021 – 2023</span>[cite: 1]
+                  </div>
+                  <h3 className="font-cinzel text-xl text-[#e2f1f8] font-semibold">
+                    Diploma in Computer Science
+                  </h3>
+                  <p className="text-xs text-[#8bbcd4] font-mono">
+                    Universiti Malaysia Pahang Al-Sultan Abdullah • CGPA 3.51[cite: 1]
+                  </p>
+                  <p className="text-xs sm:text-sm text-[#8ba2b5] leading-relaxed pt-2">
+                    Focused on fundamental software engineering, object-oriented programming (C#/Python), relational databases (MySQL/SQL Server), and data structures[cite: 1].
+                  </p>
+                </div>
+                <span className="px-4 py-1.5 rounded-full bg-[#70a9a1]/10 text-[#70a9a1] border border-[#70a9a1]/30 text-xs font-mono self-start">
+                  Diploma Education
+                </span>
+              </div>
+
             </div>
           </div>
         </section>
@@ -602,67 +650,34 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- SECTION 5: TWILIGHT PROM NIGHT GAZEBO CANOPY --- */}
-        <section id="prom-gazebos" className="w-full flex flex-col items-center gap-10 scroll-mt-28">
+        {/* --- SECTION 5: PROM GLADE --- */}
+        <section id="prom-scene" className="w-full flex flex-col items-center gap-10 scroll-mt-28">
           <div className="text-center max-w-3xl">
-            <div className="flex items-center justify-center gap-2 text-amber-300 mb-3">
-              <Sparkles size={20} />
-              <span className="font-mono text-xs uppercase tracking-widest">A Thousand Years Scene</span>
-              <Sparkles size={20} />
-            </div>
-            <h2 className="font-cinzel text-4xl sm:text-6xl text-[#fef3c7] tracking-wider mb-4 drop-shadow-[0_0_25px_rgba(253,224,71,0.3)]">
-              Prom Night Under Canopy Lights
+            <h2 className="font-cinzel text-4xl sm:text-6xl text-[#e2f1f8] tracking-wider mb-4">
+              Prom Night in the Misty Forest
             </h2>
             <p className="text-sm sm:text-base text-[#8ba2b5] font-light">
-              Step under the warm fairy light gazebo, enveloped in soft evergreen mist and glowing evening lanterns.
+              Surrounded by pine trees and slow evening cold breeze.
             </p>
           </div>
 
-          {/* Interactive Prom Gazebo Structure */}
-          <div className="w-full relative rounded-3xl overflow-hidden border border-amber-500/30 gazebo-glow p-8 sm:p-16 flex flex-col items-center justify-center min-h-[500px]">
-            
-            {/* Fairy Lights Canopy Strings SVG */}
-            <div className="absolute inset-0 pointer-events-none opacity-80">
-              <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 500">
-                {/* Gazebo Roof Frame */}
-                <path d="M500,20 L100,200 M500,20 L900,200 M500,20 L500,220 M100,200 L900,200" stroke="rgba(251, 191, 36, 0.4)" strokeWidth="2" fill="none" />
-                {/* Fairy Light Strands */}
-                <path d="M500,20 Q300,120 100,200 M500,20 Q700,120 900,200 M500,20 Q350,140 250,200 M500,20 Q650,140 750,200" stroke="rgba(253, 224, 71, 0.8)" strokeWidth="1.5" strokeDasharray="6,6" fill="none" />
-              </svg>
-            </div>
-
-            {/* Glowing Fairy Light Bulbs */}
-            <div className="absolute top-12 flex justify-center gap-12 sm:gap-24 w-full max-w-4xl z-10">
-              <div className="fairy-light" />
-              <div className="fairy-light" style={{ animationDelay: '0.4s' }} />
-              <div className="fairy-light" style={{ animationDelay: '0.8s' }} />
-              <div className="fairy-light" style={{ animationDelay: '1.2s' }} />
-              <div className="fairy-light" style={{ animationDelay: '1.6s' }} />
-            </div>
-
-            {/* Gazebo Dance Floor Content */}
-            <div className="relative z-20 flex flex-col items-center text-center gap-6 max-w-2xl mt-12">
-              <div className="p-4 rounded-full bg-amber-500/10 border border-amber-400/40 text-amber-300">
-                <Music size={32} className="animate-bounce" />
-              </div>
-
-              <blockquote className="font-cinzel text-xl sm:text-2xl text-[#fef3c7] italic leading-relaxed">
+          <div className="w-full relative rounded-3xl overflow-hidden border border-[#3b7a75]/30 bg-gradient-to-b from-[#080d14]/90 via-[#0a121c]/80 to-[#04070c]/95 p-10 sm:p-20 flex flex-col items-center justify-center min-h-[420px] shadow-[0_0_80px_rgba(0,0,0,0.8)]">
+            <div className="relative z-20 flex flex-col items-center text-center gap-6 max-w-2xl">
+              <blockquote className="font-cinzel text-2xl sm:text-3xl text-[#e2f1f8] italic leading-relaxed">
                 &ldquo;I have died everyday waiting for you. Darling, don&apos;t be afraid, I have loved you for a thousand years...&rdquo;
               </blockquote>
 
-              <p className="text-xs font-mono text-amber-200/80 uppercase tracking-widest">
+              <p className="text-xs font-mono text-[#70a9a1] uppercase tracking-widest">
                 Christina Perri — Twilight Saga
               </p>
 
-              <div className="flex items-center gap-3 mt-4">
-                <a
-                  href="#home"
-                  className="px-8 py-3.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/50 text-xs uppercase font-mono tracking-widest hover:bg-amber-500/30 hover:border-amber-300 transition-all cursor-pointer flex items-center gap-2"
-                >
-                  <Heart size={14} className="fill-amber-300 text-amber-300" />
-                  Return To Tops
-                </a>
-              </div>
+              <a
+                href="#home"
+                className="mt-4 px-8 py-3.5 rounded-full bg-[#3b7a75]/30 text-[#e2f1f8] border border-[#70a9a1]/50 text-xs uppercase font-mono tracking-widest hover:bg-[#3b7a75]/50 transition-all cursor-pointer flex items-center gap-2"
+              >
+                <Heart size={14} className="fill-[#70a9a1] text-[#70a9a1]" />
+                Return To Top
+              </a>
             </div>
           </div>
         </section>
