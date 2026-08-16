@@ -15,7 +15,7 @@ export function Skills() {
             </h3>
             <div className="flex flex-wrap gap-3">
               {category.items.map((item) => {
-                const isDarkIcon = item.color.toLowerCase() === '#000000';
+                const isDarkColor = item.color.toLowerCase() === '#000000';
 
                 return (
                   <div
@@ -25,7 +25,7 @@ export function Skills() {
                     <span
                       className="inline-block h-2.5 w-2.5 rounded-full"
                       style={{
-                        backgroundColor: isDarkIcon ? 'var(--text-primary)' : item.color,
+                        backgroundColor: isDarkColor ? 'var(--text-primary)' : item.color,
                         boxShadow: `0 0 12px ${item.color}66`,
                       }}
                     />

@@ -8,7 +8,12 @@ import { Navbar, Theme } from '@/components/navbar';
 import { Hero } from '@/components/hero';
 import { Projects } from '@/components/projects';
 import { ProjectModal } from '@/components/projectModal';
+import { Experience } from '@/components/experience';
 import { Skills } from '@/components/skills';
+import { Moon } from '@/components/moon';
+import { ForestSilhouette } from '@/components/forestSilhouette';
+import { Reveal } from '@/components/reveal';
+import { Finale } from '@/components/finale';
 
 export default function Home() {
   const [theme, setTheme] = useState<Theme>('twilight');
@@ -24,20 +29,41 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen selection:bg-[var(--accent)] selection:text-[var(--accent-contrast)] w-full overflow-x-hidden bg-[var(--bg-base)]">
-      {/* Background 3D Canvas */}
+      {/* Background 3D Canvas -- stars + smoke */}
       <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0 w-full h-full" />
 
-      {/* Vignette Overlay */}
+      {/* Moon */}
+      <Moon />
+
+      {/* Pine treeline + drifting mist */}
+      <ForestSilhouette />
+
+      {/* Cinematic Vignette Overlay */}
       <div className="fixed inset-0 pointer-events-none z-20 shadow-[inset_0_0_90px_rgba(112,169,161,0.16)] border-[6px] border-[var(--bg-base)]/30" />
 
       <Navbar theme={theme} onThemeChange={setTheme} />
 
-      {/* Main Page Layout — pt-32 clears the fixed navbar (h-16) with room to spare */}
+      {/* Main Page Layout -- pt-32 clears the fixed navbar (h-16) with room to spare */}
       <main className="relative z-10 w-full max-w-[1400px] mx-auto px-8 pt-32 pb-16 flex flex-col gap-24">
         <Hero />
-        <Projects onSelectProject={setSelectedProject} />
-        <Skills />
+
+        <Reveal>
+          <Projects onSelectProject={setSelectedProject} />
+        </Reveal>
+
+        <Reveal>
+          <Experience />
+        </Reveal>
+
+        <Reveal>
+          <Skills />
+        </Reveal>
       </main>
+
+      {/* Prom-scene finale */}
+      <div className="relative z-10">
+        <Finale />
+      </div>
 
       {/* Modal Popup (Rendered conditionally) */}
       {selectedProject && (

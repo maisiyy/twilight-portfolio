@@ -19,6 +19,8 @@
   --text-primary: #e2f1f8;
   --text-secondary: #8bbcd4;
   --text-muted: #6c8a9a;
+  --pine-far: #0d1f22;
+  --pine-near: #04100f;
 }
 
 [data-theme='new-moon'] {
@@ -32,6 +34,8 @@
   --text-primary: #dfe3f5;
   --text-secondary: #8a92c2;
   --text-muted: #5c6390;
+  --pine-far: #05070f;
+  --pine-near: #02030a;
 }
 
 [data-theme='eclipse'] {
@@ -45,6 +49,8 @@
   --text-primary: #f2fbff;
   --text-secondary: #7fdce8;
   --text-muted: #4d7580;
+  --pine-far: #050708;
+  --pine-near: #020304;
 }
 
 [data-theme='breaking-dawn'] {
@@ -58,6 +64,8 @@
   --text-primary: #fdf6ec;
   --text-secondary: #d9c4a0;
   --text-muted: #9c8a6d;
+  --pine-far: #2a2013;
+  --pine-near: #140f09;
 }
 
 * {
@@ -103,5 +111,56 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* Moon */
+.moon-glow svg {
+  animation: moon-breathe 8s ease-in-out infinite;
+}
+@keyframes moon-breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 24px var(--accent));
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(-8px);
+    filter: drop-shadow(0 0 40px var(--accent));
+    opacity: 1;
+  }
+}
+
+/* Pine treeline + mist */
+.pine-back {
+  fill: var(--pine-far);
+  opacity: 0.55;
+}
+.pine-front {
+  fill: var(--pine-near);
+}
+.mist-layer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--bg-base) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 30% 90%, var(--accent) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 35% at 75% 95%, var(--accent) 0%, transparent 60%);
+  opacity: 0.12;
+  animation: mist-drift 22s ease-in-out infinite alternate;
+}
+@keyframes mist-drift {
+  0% {
+    transform: translateX(-3%) scaleX(1);
+  }
+  100% {
+    transform: translateX(3%) scaleX(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moon-glow svg,
+  .mist-layer {
+    animation: none;
   }
 }
