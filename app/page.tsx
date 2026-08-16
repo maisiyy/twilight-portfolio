@@ -53,20 +53,40 @@ export default function Home() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // THREE.JS COLD BREEZE SMOKE SIMULATION ENGINE (No global particle dots)
+  // THREE.JS STAR FIELD & FRAME-EDGE COLD SMOKE ENGINE
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 8;
+    camera.position.z = 7;
 
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Dynamic Smoke Particle Texture
+    // Texture Generator: Soft Twinkling Star Texture
+    const createStarTexture = () => {
+      const pCanvas = document.createElement('canvas');
+      pCanvas.width = 32;
+      pCanvas.height = 32;
+      const ctx = pCanvas.getContext('2d');
+      if (ctx) {
+        const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.2, 'rgba(180, 220, 240, 0.9)');
+        gradient.addColorStop(0.6, 'rgba(112, 169, 161, 0.3)');
+        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(16, 16, 16, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return new THREE.CanvasTexture(pCanvas);
+    };
+
+    // Texture Generator: Cold Fog / Smoke Texture
     const createSmokeTexture = () => {
       const pCanvas = document.createElement('canvas');
       pCanvas.width = 128;
@@ -74,9 +94,9 @@ export default function Home() {
       const ctx = pCanvas.getContext('2d');
       if (ctx) {
         const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-        gradient.addColorStop(0, 'rgba(180, 210, 225, 0.22)');
-        gradient.addColorStop(0.4, 'rgba(112, 169, 161, 0.10)');
-        gradient.addColorStop(0.8, 'rgba(30, 50, 70, 0.03)');
+        gradient.addColorStop(0, 'rgba(195, 225, 238, 0.25)');
+        gradient.addColorStop(0.35, 'rgba(112, 169, 161, 0.12)');
+        gradient.addColorStop(0.7, 'rgba(20, 35, 50, 0.04)');
         gradient.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -86,43 +106,82 @@ export default function Home() {
       return new THREE.CanvasTexture(pCanvas);
     };
 
-    // Rolling Smoke Clouds System
-    const smokeCount = 90;
-    const smokeGeometry = new THREE.BufferGeometry();
-    const smokePositions = new Float32Array(smokeCount * 3);
-    const smokeData: { x: number; y: number; z: number; speedX: number; rotSpeed: number }[] = [];
+    // 1. STARFIELD SYSTEM (Blinking Stardust Background)
+    const starCount = 1500;
+    const starGeometry = new THREE.BufferGeometry();
+    const starPositions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i++) {
+      starPositions[i] = (Math.random() - 0.5) * 26;
+    }
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
 
-    for (let i = 0; i < smokeCount; i++) {
-      const x = (Math.random() - 0.5) * 28;
-      const y = (Math.random() - 0.5) * 14;
-      const z = (Math.random() - 0.5) * 8;
-      smokePositions[i * 3] = x;
-      smokePositions[i * 3 + 1] = y;
-      smokePositions[i * 3 + 2] = z;
+    const starMaterial = new THREE.PointsMaterial({
+      size: 0.1,
+      map: createStarTexture(),
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
 
-      smokeData.push({
+    const starParticles = new THREE.Points(starGeometry, starMaterial);
+    scene.add(starParticles);
+
+    // 2. FRAME EDGE COLD SMOKE (Spawning misty puffs specifically near screen borders)
+    const edgeSmokeCount = 60;
+    const edgeSmokeGeometry = new THREE.BufferGeometry();
+    const edgeSmokePositions = new Float32Array(edgeSmokeCount * 3);
+    const edgeSmokeData: { x: number; y: number; z: number; side: 'left' | 'right' | 'top' | 'bottom'; speedY: number; driftX: number }[] = [];
+
+    for (let i = 0; i < edgeSmokeCount; i++) {
+      const sides: ('left' | 'right' | 'top' | 'bottom')[] = ['left', 'right', 'top', 'bottom'];
+      const side = sides[i % 4];
+      let x = 0, y = 0;
+
+      if (side === 'left') {
+        x = -11 + (Math.random() * 2);
+        y = (Math.random() - 0.5) * 14;
+      } else if (side === 'right') {
+        x = 11 - (Math.random() * 2);
+        y = (Math.random() - 0.5) * 14;
+      } else if (side === 'top') {
+        x = (Math.random() - 0.5) * 22;
+        y = 6 - (Math.random() * 1.5);
+      } else {
+        x = (Math.random() - 0.5) * 22;
+        y = -6 + (Math.random() * 1.5);
+      }
+
+      const z = (Math.random() - 0.5) * 4;
+      edgeSmokePositions[i * 3] = x;
+      edgeSmokePositions[i * 3 + 1] = y;
+      edgeSmokePositions[i * 3 + 2] = z;
+
+      edgeSmokeData.push({
         x,
         y,
         z,
-        speedX: 0.003 + Math.random() * 0.005,
-        rotSpeed: (Math.random() - 0.5) * 0.001
+        side,
+        speedY: (Math.random() - 0.5) * 0.003,
+        driftX: (Math.random() - 0.5) * 0.002
       });
     }
 
-    smokeGeometry.setAttribute('position', new THREE.BufferAttribute(smokePositions, 3));
+    edgeSmokeGeometry.setAttribute('position', new THREE.BufferAttribute(edgeSmokePositions, 3));
 
-    const smokeMaterial = new THREE.PointsMaterial({
-      size: 4.5,
+    const edgeSmokeMaterial = new THREE.PointsMaterial({
+      size: 3.8,
       map: createSmokeTexture(),
       transparent: true,
+      opacity: 0.7,
       depthWrite: false,
       blending: THREE.NormalBlending
     });
 
-    const smokeParticles = new THREE.Points(smokeGeometry, smokeMaterial);
-    scene.add(smokeParticles);
+    const edgeSmokeParticles = new THREE.Points(edgeSmokeGeometry, edgeSmokeMaterial);
+    scene.add(edgeSmokeParticles);
 
-    // Resize Listener
+    // Resize Handler
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -130,25 +189,29 @@ export default function Home() {
     };
     window.addEventListener('resize', handleResize);
 
-    // Animation Loop (Rolling Cold Breeze Motion)
+    // Animation Loop
     let animationFrameId: number;
+    let clock = new THREE.Clock();
+
     const animate = () => {
-      const posArray = smokeGeometry.attributes.position.array as Float32Array;
+      const elapsedTime = clock.getElapsedTime();
 
-      for (let i = 0; i < smokeCount; i++) {
-        smokeData[i].x += smokeData[i].speedX;
+      // Twinkle Stars
+      starParticles.rotation.y = elapsedTime * 0.012;
+      starParticles.rotation.x = Math.sin(elapsedTime * 0.005) * 0.02;
 
-        // Reset smoke cloud when it drifts past right boundary
-        if (smokeData[i].x > 15) {
-          smokeData[i].x = -15;
-        }
+      // Animate Edge Cold Smoke (Gentle rolling along frame boundaries)
+      const posArr = edgeSmokeGeometry.attributes.position.array as Float32Array;
+      for (let i = 0; i < edgeSmokeCount; i++) {
+        const item = edgeSmokeData[i];
 
-        posArray[i * 3] = smokeData[i].x;
-        posArray[i * 3 + 1] = smokeData[i].y + Math.sin(smokeData[i].x * 0.5) * 0.2;
+        item.x += item.driftX + Math.sin(elapsedTime + i) * 0.001;
+        item.y += item.speedY + Math.cos(elapsedTime + i) * 0.001;
+
+        posArr[i * 3] = item.x;
+        posArr[i * 3 + 1] = item.y;
       }
-
-      smokeGeometry.attributes.position.needsUpdate = true;
-      smokeParticles.rotation.z += 0.0003;
+      edgeSmokeGeometry.attributes.position.needsUpdate = true;
 
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
@@ -324,8 +387,12 @@ export default function Home() {
   return (
     <div className="relative min-h-screen selection:bg-[#3b7a75] selection:text-[#e2f1f8] w-full overflow-x-hidden">
       
-      {/* Three.js Canvas with Fog/Smoke Breeze */}
+      {/* Three.js Canvas */}
       <canvas ref={canvasRef} id="three-canvas" />
+
+      {/* Frame Edge Cold Smoke Vignette Overlays (Soft Frost / Smoke on screen edges) */}
+      <div className="fixed inset-0 pointer-events-none z-20 shadow-[inset_0_0_90px_rgba(112,169,161,0.16)] border-[6px] border-[#03060a]/30" />
+      <div className="fixed inset-0 pointer-events-none z-10 bg-[radial-gradient(ellipse_at_center,transparent_65%,rgba(3,6,10,0.85)_100%)]" />
 
       {/* Orbiting Moon */}
       <div className="moving-moon" />
@@ -340,7 +407,7 @@ export default function Home() {
         className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full twilight-card text-[#70a9a1] hover:text-[#e2f1f8] transition-all flex items-center gap-2 text-xs shadow-2xl cursor-pointer"
       >
         {isPlayingAudio ? <Volume2 size={18} className="animate-pulse" /> : <VolumeX size={18} />}
-        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Cold Breeze Sound: ON' : 'Atmosphere'}</span>
+        <span className="hidden sm:inline font-mono">{isPlayingAudio ? 'Cold Atmosphere: ON' : 'Atmosphere'}</span>
       </button>
 
       {/* Sticky Top Navbar */}
@@ -483,12 +550,14 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- SECTION 3: GAZEBO & FAIRY LIGHTS EXCLUSIVE EXPERIENCE SECTION --- */}
+        {/* --- SECTION 3: GAZEBO FRAME EXPERIENCE SECTION --- */}
         <section id="experience" className="w-full scroll-mt-28 relative">
           
-          {/* GAZEBO FRAME STRUCTURE (Exclusive to Experience Section) */}
           <div className="relative w-full rounded-3xl border-2 border-amber-500/30 bg-gradient-to-b from-[#0c1622]/95 via-[#080d14]/90 to-[#04070c]/98 p-8 sm:p-16 shadow-[0_0_60px_rgba(251,191,36,0.12)] overflow-hidden">
             
+            {/* Gazebo Edge Cold Smoke Effect */}
+            <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_50px_rgba(112,169,161,0.22)] border border-amber-300/20 rounded-3xl" />
+
             {/* Gazebo Roof Trim Beams */}
             <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-r from-amber-700/40 via-amber-400/60 to-amber-700/40 border-b border-amber-300/40" />
 
@@ -501,10 +570,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-
-            {/* Gazebo Pillars Side Decorative Lines */}
-            <div className="absolute top-0 left-4 bottom-0 w-1 bg-gradient-to-b from-amber-500/30 via-amber-300/20 to-transparent hidden sm:block" />
-            <div className="absolute top-0 right-4 bottom-0 w-1 bg-gradient-to-b from-amber-500/30 via-amber-300/20 to-transparent hidden sm:block" />
 
             <div className="text-center mb-14">
               <span className="font-mono text-xs text-amber-300 uppercase tracking-widest block mb-2">
