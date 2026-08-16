@@ -1,59 +1,85 @@
 'use client';
 
 import { useState } from 'react';
-import { PROJECTS, Project } from '@/src/data/portfolio';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, FolderGit2 } from 'lucide-react';
+import { Project, PROJECTS } from '@/data/portfolio';
+
+type Filter = 'all' | Project['category'];
+
+const FILTERS: { label: string; value: Filter }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Web', value: 'web' },
+  { label: 'Game', value: 'game' },
+  { label: 'AI', value: 'ai' },
+];
 
 interface ProjectsProps {
   onSelectProject: (project: Project) => void;
 }
 
 export function Projects({ onSelectProject }: ProjectsProps) {
-  const [filter, setFilter] = useState<'all' | 'web' | 'game' | 'ai'>('all');
+  const [filter, setFilter] = useState<Filter>('all');
 
-  // Filter projects dynamically based on category state
-  const filtered = filter === 'all' 
-    ? PROJECTS 
-    : PROJECTS.filter((p) => p.category === filter);
+  const visibleProjects =
+    filter === 'all' ? PROJECTS : PROJECTS.filter((p) => p.category === filter);
 
   return (
-    <section id="projects" className="w-full flex flex-col gap-8">
-      <div className="flex justify-between items-center border-b border-[#3b7a75]/20 pb-4">
-        <h2 className="font-cinzel text-3xl text-[#e2f1f8]">Featured Projects</h2>
-        
-        {/* Category Filter Buttons */}
-        <div className="flex gap-2">
-          {(['all', 'web', 'game', 'ai'] as const).map((cat) => (
+    <section id="projects">
+      <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+        <h2 className="font-[Cinzel] text-3xl tracking-wide text-[var(--text-primary)]">
+          Featured Projects
+        </h2>
+
+        <div className="flex items-center gap-1 font-mono text-xs">
+          {FILTERS.map(({ label, value }) => (
             <button
-              key={cat}
-              onClick={() => setFilter(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase transition-all ${
-                filter === cat ? 'bg-[#3b7a75] text-[#e2f1f8]' : 'text-[#8ba2b5]'
+              key={value}
+              onClick={() => setFilter(value)}
+              className={`px-3 py-1.5 rounded-md border transition-colors duration-300 uppercase tracking-wider ${
+                filter === value
+                  ? 'bg-[var(--accent)] text-[var(--accent-contrast)] border-[var(--accent)]'
+                  : 'border-[var(--border-glass)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent)]/50'
               }`}
             >
-              {cat}
+              {label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map((project) => (
-          <div
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {visibleProjects.map((project) => (
+          <button
             key={project.id}
             onClick={() => onSelectProject(project)}
-            className="twilight-card rounded-xl p-6 cursor-pointer hover:-translate-y-1 transition-all border border-[#3b7a75]/30"
+            className="twilight-card group text-left p-6 rounded-xl border border-[var(--border-glass)] bg-[var(--surface-glass)] backdrop-blur-md transition-all duration-300 hover:border-[var(--accent)]/50 hover:-translate-y-1"
           >
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-xs font-mono text-[#70a9a1]">{project.tagline}</span>
-              <ExternalLink size={16} className="text-[#8ba2b5]" />
+            <div className="flex items-start justify-between mb-3">
+              <span className="font-mono text-xs uppercase tracking-wider text-[var(--accent)]">
+                {project.tagline}
+              </span>
+              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {project.github && <FolderGit2 size={14} className="text-[var(--text-muted)]" />}
+                {project.link && <ExternalLink size={14} className="text-[var(--text-muted)]" />}
+              </div>
             </div>
-            <h3 className="font-cinzel text-lg text-[#e2f1f8] mb-2">{project.title}</h3>
-            <p className="text-xs text-[#8ba2b5] font-light">{project.summary}</p>
-          </div>
+
+            <h3 className="font-[Cinzel] text-xl mb-2 text-[var(--text-primary)]">
+              {project.title}
+            </h3>
+
+            <p className="text-sm text-[var(--text-muted)] leading-relaxed">
+              {project.summary}
+            </p>
+          </button>
         ))}
       </div>
+
+      {visibleProjects.length === 0 && (
+        <p className="font-mono text-sm text-[var(--text-muted)] text-center py-12">
+          No {filter} projects yet — check back soon.
+        </p>
+      )}
     </section>
   );
 }

@@ -1,165 +1,107 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
 
-@theme {
-  --font-cinzel: var(--font-cinzel), serif;
-  --font-sans: var(--font-inter), sans-serif;
+/*
+  Theme contract: every component reads only these variables.
+  Never hardcode hex in a component — add a new variable here instead,
+  or the color will freeze on whichever theme was active when it was written.
+*/
+
+:root,
+[data-theme='twilight'] {
+  /* Cold teal & slate — the default, moody overcast-forest feel */
+  --bg-base: #03060a;
+  --surface-glass: rgba(12, 26, 38, 0.55);
+  --surface-glass-strong: rgba(9, 20, 30, 0.85);
+  --border-glass: rgba(59, 122, 117, 0.3);
+  --accent: #70a9a1;
+  --accent-contrast: #03060a;
+  --text-primary: #e2f1f8;
+  --text-secondary: #8bbcd4;
+  --text-muted: #6c8a9a;
 }
 
-html {
+[data-theme='new-moon'] {
+  /* Deeper dark blue/black — colder, more nocturnal */
+  --bg-base: #000000;
+  --surface-glass: rgba(10, 14, 26, 0.6);
+  --surface-glass-strong: rgba(6, 9, 18, 0.88);
+  --border-glass: rgba(74, 90, 140, 0.3);
+  --accent: #5a6fb8;
+  --accent-contrast: #000000;
+  --text-primary: #dfe3f5;
+  --text-secondary: #8a92c2;
+  --text-muted: #5c6390;
+}
+
+[data-theme='eclipse'] {
+  /* High-contrast obsidian & sharp cyan */
+  --bg-base: #050505;
+  --surface-glass: rgba(15, 15, 18, 0.6);
+  --surface-glass-strong: rgba(8, 8, 10, 0.9);
+  --border-glass: rgba(0, 229, 255, 0.25);
+  --accent: #00e5ff;
+  --accent-contrast: #05070a;
+  --text-primary: #f2fbff;
+  --text-secondary: #7fdce8;
+  --text-muted: #4d7580;
+}
+
+[data-theme='breaking-dawn'] {
+  /* Warm gold & icy white — the one departure from cold tones, on purpose */
+  --bg-base: #0c0a08;
+  --surface-glass: rgba(38, 32, 24, 0.55);
+  --surface-glass-strong: rgba(28, 23, 17, 0.85);
+  --border-glass: rgba(212, 175, 106, 0.3);
+  --accent: #d4af6a;
+  --accent-contrast: #0c0a08;
+  --text-primary: #fdf6ec;
+  --text-secondary: #d9c4a0;
+  --text-muted: #9c8a6d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
   scroll-behavior: smooth;
 }
 
-:root {
-  /* Twilight Default */
-  --bg-color: #03060a;
-  --card-bg: rgba(10, 18, 28, 0.82);
-  --accent-color: #70a9a1;
-  --glow-color: #8bbcd4;
-  --text-main: #e2f1f8;
-  --border-color: rgba(112, 169, 161, 0.35);
-  --tree-tint: rgba(112, 169, 161, 0.15);
+body {
+  font-family: var(--font-sans, system-ui, sans-serif);
 }
 
-[data-theme="twilight"] {
-  --bg-color: #03060a;
-  --card-bg: rgba(10, 18, 28, 0.82);
-  --accent-color: #70a9a1;
-  --glow-color: #8bbcd4;
-  --text-main: #e2f1f8;
-  --border-color: rgba(112, 169, 161, 0.35);
-  --tree-tint: rgba(112, 169, 161, 0.15);
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
 }
 
-[data-theme="new-moon"] {
-  --bg-color: #0c0804;
-  --card-bg: rgba(26, 17, 10, 0.82);
-  --accent-color: #d97706;
-  --glow-color: #f59e0b;
-  --text-main: #fef3c7;
-  --border-color: rgba(217, 119, 6, 0.35);
-  --tree-tint: rgba(217, 119, 6, 0.15);
-}
-
-[data-theme="eclipse"] {
-  --bg-color: #0a0305;
-  --card-bg: rgba(28, 10, 18, 0.82);
-  --accent-color: #e11d48;
-  --glow-color: #f43f5e;
-  --text-main: #ffe4e6;
-  --border-color: rgba(225, 29, 72, 0.35);
-  --tree-tint: rgba(225, 29, 72, 0.15);
-}
-
-[data-theme="breaking-dawn"] {
-  --bg-color: #090803;
-  --card-bg: rgba(28, 24, 12, 0.82);
-  --accent-color: #eab308;
-  --glow-color: #fde047;
-  --text-main: #fefce8;
-  --border-color: rgba(234, 179, 8, 0.4);
-  --tree-tint: rgba(234, 179, 8, 0.15);
-}
-
-@layer base {
-  body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    overflow-x: hidden;
-    position: relative;
-    transition: background-color 0.8s ease, color 0.8s ease;
-  }
-}
-
-/* --- THREE.JS BACKGROUND CANVAS --- */
-#three-canvas {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* --- ANIMATED MOON --- */
-.moving-moon {
-  position: fixed;
-  top: 5%;
-  left: -8%;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #d4e8f5 55%, var(--accent-color) 100%);
-  box-shadow: 0 0 60px rgba(255, 255, 255, 0.5), 0 0 120px var(--glow-color);
-  z-index: 2;
-  pointer-events: none;
-  animation: moonOrbit 70s linear infinite;
-  transition: box-shadow 0.8s ease, background 0.8s ease;
-}
-
-@keyframes moonOrbit {
-  0% { transform: translateX(0vw) translateY(0vh); opacity: 0.2; }
-  10% { opacity: 0.95; }
-  90% { opacity: 0.95; }
-  100% { transform: translateX(115vw) translateY(20vh); opacity: 0.1; }
-}
-
-/* --- PINE FOREST CANOPY SILHOUETTES --- */
-.pine-canopy-left, .pine-canopy-right {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  width: 22vw;
-  max-width: 320px;
-  min-width: 160px;
-  pointer-events: none;
-  z-index: 5;
-  opacity: 0.75;
-  background-repeat: repeat-y;
-  background-size: contain;
-  filter: drop-shadow(0 0 15px rgba(0,0,0,0.9));
-  transition: filter 0.8s ease;
-}
-
-.pine-canopy-left {
-  left: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 800' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L40,60 L20,80 L60,150 L30,170 L80,260 L35,290 L90,400 L40,430 L85,550 L30,580 L75,700 L20,730 L60,800 L0,800 Z' fill='%23020406'/%3E%3Cpath d='M0,0 L25,40 L12,55 L40,110 L20,130 L55,200 L25,225 L65,310 L30,335 L60,430 L20,455 L55,550 L15,575 L45,670 L0,710 Z' fill='%23050b10' opacity='0.7'/%3E%3C/svg%3E");
-}
-
-.pine-canopy-right {
-  right: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 800' preserveAspectRatio='none'%3E%3Cpath d='M100,0 L60,60 L80,80 L40,150 L70,170 L20,260 L65,290 L10,400 L60,430 L15,550 L70,580 L25,700 L80,730 L40,800 L100,800 Z' fill='%23020406'/%3E%3Cpath d='M100,0 L75,40 L88,55 L60,110 L80,130 L45,200 L75,225 L35,310 L70,335 L40,430 L80,455 L45,550 L85,575 L55,670 L100,710 Z' fill='%23050b10' opacity='0.7'/%3E%3C/svg%3E");
-}
-
-/* --- PROM GAZEBO SCENE LIGHTS --- */
-.gazebo-glow {
-  background: radial-gradient(circle at 50% 30%, rgba(253, 224, 71, 0.25) 0%, rgba(217, 119, 6, 0.12) 40%, transparent 75%);
-  box-shadow: 0 -20px 80px rgba(253, 224, 71, 0.2);
-}
-
-.fairy-light {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #fef08a;
-  box-shadow: 0 0 10px #fef08a, 0 0 20px #f59e0b;
-  animation: pulseLight 2s infinite alternate ease-in-out;
-}
-
-@keyframes pulseLight {
-  0% { opacity: 0.4; transform: scale(0.8); }
-  100% { opacity: 1; transform: scale(1.3); }
-}
-
-/* --- GLASS CARDS --- */
+/* Shared glassmorphism card used across projects, modal, skills, hero CTA */
 .twilight-card {
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 12px 45px -10px rgba(0, 0, 0, 0.8);
-  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-.twilight-card:hover {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 30px var(--border-color);
+/* Thin scrollbar that matches the theme instead of the browser default */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-glass);
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

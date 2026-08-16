@@ -1,4 +1,4 @@
-//define typescript interfaces for strict type checking
+// Define TypeScript interfaces for strict type checking
 
 export interface Project {
     id: string;
@@ -8,7 +8,8 @@ export interface Project {
     summary: string;
     highlights: string[];
     techStack: string[];
-    link: string;
+    link?: string;    // live/public demo — omit if internal-only
+    github?: string;  // repo link — separate from `link` since not every project has both
 }
 
 export interface SkillItem {
@@ -70,19 +71,54 @@ export const PROJECTS: Project[] = [
             'Real-time physical landmark detection using MediaPipe.',
         ],
         techStack: ['Unity', 'C#', 'MediaPipe'],
-        link: 'https://github.com'    
     },
     {
         id: 'rema-lti',
         title: 'REMA LTI Safety Display & Portal',
         category: 'web',
         tagline: 'Safety Signage & REST Infrastructure',
-        summary: 'Real-time safety display board and incident management portal for REMA LTI, a leading manufacturer of industrial equipment.',
+        summary: 'Real-time safety display board and incident management portal for REMA, a leading manufacturer of industrial equipment.',
         highlights: [
-            'Real-time display dashboard built with Vite, Javascript, and CSS',
-            'PHP management portal enabling safety officers to log incidents'
+            'Real-time display dashboard built with Vite, JavaScript, and CSS.',
+            'PHP management portal enabling safety officers to log incidents, edit the ticker feed, and rotate posters.',
         ],
-        techStack: ['Vite', 'Javascript', 'CSS', 'PHP'],
-        link: 'https://github.com'      
-    }
+        techStack: ['Vite', 'JavaScript', 'CSS', 'PHP', 'SQL Server'],
+    },
+    {
+        id: 'patrol-system',
+        title: 'REMA Patrol System',
+        category: 'web',
+        tagline: 'Sensor Monitoring & Workflow',
+        summary: 'Team-built factory floor patrol app with live sensor monitoring and a checklist-driven approval workflow.',
+        highlights: [
+            'Live sensor monitoring card polling a REST endpoint every 30 seconds.',
+            'Countermeasure workflow with draft/approval states for abnormal checklist items.',
+        ],
+        techStack: ['PHP', 'SQL Server'],
+    },
+    {
+        id: 'pics',
+        title: 'PICS — PC Inventory & Compliance System',
+        category: 'web',
+        tagline: 'Independent Project',
+        summary: 'Replaces manual spreadsheet-based PC compliance tracking with a proper CRUD system.',
+        highlights: [
+            'Full CRUD, CSV import/export, and modal forms.',
+            'Built independently after noticing the team tracking hundreds of workstations by hand.',
+        ],
+        techStack: ['Laravel', 'MySQL', 'Tailwind CSS'],
+        github: 'https://github.com/maisiyy/pc-inventory',
+    },
+    {
+        id: 'mood-music',
+        title: 'Mood-Based Music Recommender',
+        category: 'ai',
+        tagline: 'Recommendation App',
+        summary: 'Suggests tracks based on mood input, powered by the Deezer API.',
+        highlights: [
+            'Dark-themed frontend served via ASP.NET Core static file middleware.',
+            'Pivoted to Deezer after hitting Spotify API access limits.',
+        ],
+        techStack: ['C#', 'ASP.NET Core', 'Deezer API'],
+    },
 ];
