@@ -13,32 +13,32 @@ interface ExperienceItem {
 const EXPERIENCE: ExperienceItem[] = [
   {
     id: 'diploma',
-    period: 'TODO — e.g. 2021 – 2023',
-    title: 'Diploma',
-    place: 'TODO — your diploma institution & field',
-    description: 'TODO — a line on what the diploma covered.',
+    period: '2021 – 2023',
+    title: 'Diploma of Computer Science',
+    place: 'Universiti Malaysia Pahang',
+    description: 'Final Year Project : E-Blood Donation System using PHP and mySQL.',
   },
   {
     id: 'degree',
-    period: 'TODO — e.g. 2023 – Present',
-    title: 'Bachelor of Graphics & Multimedia Technology',
+    period: '2023 – 2026',
+    title: 'Bachelor of Computer Science (Graphics & Multimedia Technology)',
     place: 'Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA)',
-    description: 'Focused on graphics, multimedia, and game development.',
+    description: 'Final Year Project : MY-HYGIENE : Using Image Processing in a 2D Educational Game for Young Learners using Unity and C#.',
   },
   {
     id: 'internship',
-    period: 'TODO — e.g. Mar – Aug 2026',
-    title: '24-Week Industrial Training',
+    period: 'March – August 2026',
+    title: 'Information System Intern',
     place: 'ROHM Electronics Malaysia (REMA), Information System Department',
     description:
-      'Built full-stack internal tools spanning safety display systems, patrol workflows, and PC inventory management.',
+      '',
   },
 ];
 
 export function Experience() {
   return (
-    <section id="experience">
-      <h2 className="font-[Cinzel] text-3xl tracking-wide text-[var(--text-primary)] mb-10">
+    <section id="experience" className="screen-section mx-auto w-full max-w-3xl flex flex-col justify-center">
+      <h2 className="font-[Cinzel] text-3xl tracking-wide text-[var(--text-primary)] mb-10 text-center">
         Experience
       </h2>
 

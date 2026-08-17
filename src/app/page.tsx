@@ -11,7 +11,6 @@ import { ProjectModal } from '@/components/projectModal';
 import { Experience } from '@/components/experience';
 import { Skills } from '@/components/skills';
 import { Moon } from '@/components/moon';
-import { ForestSilhouette } from '@/components/forestSilhouette';
 import { Reveal } from '@/components/reveal';
 import { Finale } from '@/components/finale';
 
@@ -35,8 +34,6 @@ export default function Home() {
       {/* Moon */}
       <Moon />
 
-      {/* Pine treeline + drifting mist */}
-      <ForestSilhouette />
 
       {/* Cinematic Vignette Overlay */}
       <div className="fixed inset-0 pointer-events-none z-20 shadow-[inset_0_0_90px_rgba(112,169,161,0.16)] border-[6px] border-[var(--bg-base)]/30" />
@@ -44,20 +41,27 @@ export default function Home() {
       <Navbar theme={theme} onThemeChange={setTheme} />
 
       {/* Main Page Layout -- pt-32 clears the fixed navbar (h-16) with room to spare */}
-      <main className="relative z-10 w-full max-w-[1400px] mx-auto px-8 pt-32 pb-16 flex flex-col gap-24">
-        <Hero />
+      <main className="relative z-10 w-full">
+        <div className="max-w-[1400px] mx-auto px-8">
+          <Hero />
+        </div>
 
+        {/* Full-bleed on purpose — the forest scene reveal needs room to
+            breathe on large screens rather than being boxed into the same
+            narrow column as the rest of the content */}
         <Reveal>
           <Projects onSelectProject={setSelectedProject} />
         </Reveal>
 
-        <Reveal>
-          <Experience />
-        </Reveal>
+        <div className="max-w-[1400px] mx-auto px-8">
+          <Reveal>
+            <Experience />
+          </Reveal>
 
-        <Reveal>
-          <Skills />
-        </Reveal>
+          <Reveal>
+            <Skills />
+          </Reveal>
+        </div>
       </main>
 
       {/* Prom-scene finale */}

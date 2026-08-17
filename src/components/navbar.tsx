@@ -30,9 +30,9 @@ export function Navbar({ theme, onThemeChange }: NavbarProps) {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-[var(--surface-glass)] border-b border-[var(--border-glass)]">
-      <div className="max-w-[1400px] mx-auto px-8 h-16 flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-10 h-20 flex items-center justify-between">
         <a href="#home" className="font-[Cinzel] text-sm tracking-widest text-[var(--text-primary)] uppercase">
-          SNM
+          Mai
         </a>
 
         <div className="hidden md:flex items-center gap-8">

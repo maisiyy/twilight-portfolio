@@ -5,6 +5,7 @@ import * as THREE from 'three';
 
 const STAR_COUNT = 1400;
 const SMOKE_PLANE_COUNT = 6;
+const COMET_COUNT = 2;
 
 export function useColdSmokeCanvas(canvasRef: RefObject<HTMLCanvasElement | null>) {
   useEffect(() => {
@@ -49,17 +50,43 @@ export function useColdSmokeCanvas(canvasRef: RefObject<HTMLCanvasElement | null
     starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     starGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
+    const starTexture = createStarTexture();
     const starMaterial = new THREE.PointsMaterial({
       color: 0xbfe3e0,
-      size: 1.1,
+      map: starTexture,
+      size: 1.8,
       sizeAttenuation: true,
       transparent: true,
-      opacity: 0.85,
+      opacity: 1,
+      alphaTest: 0.02,
       depthWrite: false,
     });
 
     const stars = new THREE.Points(starGeometry, starMaterial);
     scene.add(stars);
+
+    // ---- Comets ----
+    const comets = Array.from({ length: COMET_COUNT }, (_, index) => {
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(24), 3));
+
+      const material = new THREE.LineBasicMaterial({
+        color: 0xdafcff,
+        transparent: true,
+        opacity: 0.75,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const trail = new THREE.Line(geometry, material);
+      trail.visible = false;
+      scene.add(trail);
+
+      return {
+        trail,
+        offset: index * 0.58 + 0.18,
+        speed: 0.045 + index * 0.008,
+      };
+    });
 
     // ---- Cold smoke gradient planes ----
     const smokeTexture = createSmokeTexture();
@@ -95,15 +122,35 @@ export function useColdSmokeCanvas(canvasRef: RefObject<HTMLCanvasElement | null
 
     // ---- Animation loop ----
     let frameId: number;
-    const clock = new THREE.Clock();
+    const timer = new THREE.Timer();
+    timer.connect(document);
 
-    const animate = () => {
+    const animate = (timestamp: number) => {
       frameId = requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
+      timer.update(timestamp);
+      const elapsed = timer.getElapsed();
 
       if (!prefersReducedMotion) {
-        stars.rotation.y = elapsed * 0.008;
-        stars.rotation.x = elapsed * 0.003;
+        stars.rotation.y = elapsed * 0.025;
+        stars.rotation.x = elapsed * 0.008;
+
+        comets.forEach(({ trail, offset, speed }) => {
+          const progress = (elapsed * speed + offset) % 1;
+          const isVisible = progress > 0.08 && progress < 0.72;
+          trail.visible = isVisible;
+
+          if (!isVisible) return;
+
+          const headX = -85 + progress * 170;
+          const headY = 48 - progress * 96;
+          const positions = trail.geometry.getAttribute('position') as THREE.BufferAttribute;
+
+          for (let point = 0; point < 8; point++) {
+            const tail = point * 2.4;
+            positions.setXYZ(point, headX - tail, headY + tail * 0.55, 8);
+          }
+          positions.needsUpdate = true;
+        });
 
         smokePlanes.forEach((plane, i) => {
           plane.rotation.z += 0.0003 * (i % 2 === 0 ? 1 : -1);
@@ -113,14 +160,20 @@ export function useColdSmokeCanvas(canvasRef: RefObject<HTMLCanvasElement | null
 
       renderer.render(scene, camera);
     };
-    animate();
+    frameId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
+      timer.dispose();
       starGeometry.dispose();
       starMaterial.dispose();
+      starTexture.dispose();
       smokeTexture.dispose();
+      comets.forEach(({ trail }) => {
+        trail.geometry.dispose();
+        (trail.material as THREE.Material).dispose();
+      });
       smokePlanes.forEach((plane) => {
         plane.geometry.dispose();
         (plane.material as THREE.Material).dispose();
@@ -128,6 +181,29 @@ export function useColdSmokeCanvas(canvasRef: RefObject<HTMLCanvasElement | null
       renderer.dispose();
     };
   }, [canvasRef]);
+}
+
+function createStarTexture(): THREE.Texture {
+  const size = 80;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
+  const center = size / 2;
+
+  const glow = ctx.createRadialGradient(center, center, 0, center, center, center);
+  glow.addColorStop(0, 'rgba(255, 255, 255, 1)');
+  glow.addColorStop(0.1, 'rgba(225, 246, 255, 0.95)');
+  glow.addColorStop(0.28, 'rgba(191, 227, 224, 0.45)');
+  glow.addColorStop(0.55, 'rgba(191, 227, 224, 0.1)');
+  glow.addColorStop(1, 'rgba(191, 227, 224, 0)');
+
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, size, size);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
 }
 
 function createSmokeTexture(): THREE.Texture {

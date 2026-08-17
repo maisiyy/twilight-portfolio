@@ -4,7 +4,7 @@ import { Reveal } from '@/components/reveal';
 
 export function Finale() {
   return (
-    <section id="contact" className="relative flex flex-col items-center text-center py-24 px-8">
+    <section id="contact" className="screen-section relative flex flex-col items-center justify-center text-center py-24 px-8">
       <Reveal>
         <div
           className="relative w-full max-w-3xl mx-auto mb-10"
@@ -27,9 +27,9 @@ export function Finale() {
       </Reveal>
 
       <Reveal delay={150}>
-        <h2 className="font-[Cinzel] text-3xl sm:text-4xl tracking-wide text-[var(--text-primary)] mb-4">
+        {/* <h2 className="font-[Cinzel] text-3xl sm:text-4xl tracking-wide text-[var(--text-primary)] mb-4">
           One Last Dance
-        </h2>
+        </h2> */}
         <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-md mx-auto mb-8 leading-relaxed">
           Thanks for wandering through. If something here caught your eye, I&apos;d love to talk.
         </p>

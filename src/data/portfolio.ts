@@ -56,6 +56,13 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
             { name: 'Figma', iconName: 'figma', color: '#F24E1E' },
             { name: 'Unity', iconName: 'unity', color: '#000000' },
         ]
+    },
+    {
+        title: 'Databases',
+        items: [
+            { name: 'MySQL', iconName: 'mysql', color: '#4479A1' },
+            { name: 'SQL Server', iconName: 'sqlserver', color: '#CC2927' },
+        ]
     }
 ];
 
